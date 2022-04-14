@@ -1,15 +1,15 @@
-# mo · js – [![npm](https://img.shields.io/npm/v/@aloento/mojs.svg)](https://www.npmjs.com/package/@aloento/mojs)
+# [mo · js](https://www.npmjs.com/package/@aloento/mojs)
 
 The motion graphics toolbelt for the web.
 
-[![mo · js](logo.svg "mo · js")](https://mojs.github.io/)
-
 ## Intro
+
 **mo · js** is a javascript motion graphics library that is a **fast, retina ready, modular and open source**. In comparison to other libraries, it has a different syntax and code animation structure approach. The declarative API provides you a complete control over the animation, making it customizable with ease.
 
 The library provides **built-in components** to start animating from scratch like html, shape, swirl, burst and stagger, but also bring you tools to help craft your animation in a most natural way. Using mojs on your site will enhance the user experience, enrich your content visually and create **delightful animations** precisely.
 
 ## Install
+
 ### Use with a bundler
 
 Mojs is published on the **NPM registry** and **GPR registry**, so you can install it through the command line interpreter using your favorite package manager. This is the best way to install the library if you are comfortable with **javascript bundlers** like `webpack` or `rollup`.
@@ -25,7 +25,7 @@ yarn add @aloento/mojs
 Then **import it like any other module** inside your build:
 
 ```js
-import mojs from '@aloento/mojs';
+import mojs from "@aloento/mojs";
 
 new mojs.Html({
   // ...
@@ -35,14 +35,18 @@ new mojs.Html({
 > Using a bundler has **many advantages** like output compression, code splitting, tree shaking, etc., so we encourage you to use this kind of tool with mojs.
 
 ## User guide
+
 The base documentation you need to get started with mojs.
+
 - [Get started](https://mojs.github.io/tutorials/getting-started.html)
 - [@mojs/player](https://github.com/mojs/mojs-player/)
 - [@mojs/curve-editor](https://github.com/mojs/mojs-curve-editor/)
 - [@mojs/timeline-editor](https://github.com/mojs/mojs-timeline-editor/)
 
 ## Learn
+
 Discover the amazing things that mojs can do!
+
 - [Shape & Swirl](https://mojs.github.io/tutorials/shape-swirl/) _(Tutorial)_
 - [Burst](https://mojs.github.io/tutorials/burst/) _(Tutorial)_
 - [Icon animations powered by mo.js](https://tympanus.net/codrops/2016/02/23/icon-animations-powered-by-mo-js/) _(Codrops tutorial)_
@@ -51,12 +55,15 @@ Discover the amazing things that mojs can do!
 - [Web animations and mo.js](https://www.youtube.com/watch?v=yRxWa8lXasI) _(Youtube video)_
 
 ## Developer
+
 Get technical informations, open an issue/pull request or join the (amazing) community!
+
 - [API documentation](https://mojs.github.io/api/)
 - [Github](https://github.com/mojs/mojs/)
 - [Slack workspace](https://mojs.slack.com) _(Not in the workspace yet? Use the [invite link](https://join.slack.com/t/mojs/shared_invite/zt-dlyxhupt-VR7eV2uwCnvu3Cx~Yc_L9Q) 🔓)_
 
 ## Showcase
+
 - [Motion Graphics for the Web](https://codepen.io/sol0mka/full/ogOYJj/)
 - [Bubble Layout](https://codepen.io/sol0mka/full/yNOage/)
 - [Sleepy Mole](https://codepen.io/sol0mka/full/OyzBXR/)
@@ -78,6 +85,7 @@ Get technical informations, open an issue/pull request or join the (amazing) com
 - [Simple Ripple](https://codepen.io/sol0mka/full/XKdWJg/) _(click to see)_
 
 ## Browser support
+
 - Chrome 49+
 - Firefox 70+
 - Opera 36+
@@ -87,9 +95,12 @@ Get technical informations, open an issue/pull request or join the (amazing) com
 > Many other browsers may work, but are not extensively tested.
 
 ## Maintainers
+
 Since 2019, mojs ecosystem is **maintained and developed** by:
+
 - [Xavier Foucrier](https://github.com/xavierfoucrier)
 - [Jonas Sandstedt](https://github.com/Sandstedt)
 
 ## Contribute
+
 If you want to report a bug or request a new feature/improvement, please **read the project [contributors guidelines](.github/CONTRIBUTING.md) before**. Thanks for taking time to contribute.

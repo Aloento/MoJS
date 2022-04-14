@@ -1,8 +1,7 @@
-import h from './h';
-import Thenable from './thenable';
+import h from "./h";
+import Thenable from "./thenable";
 
 class Tuneable extends Thenable {
-
   /*
     Method to start the animation with optional new options.
     @public
@@ -10,7 +9,6 @@ class Tuneable extends Thenable {
     @returns {Object} this.
   */
   tune(o) {
-
     // if options object was passed
     if (o && Object.keys(o).length) {
       this._transformHistory(o);
@@ -21,7 +19,7 @@ class Tuneable extends Thenable {
       // but we need the as strings to store in history
       // and merge in history chains
       this._history[0] = h.cloneObj(this._props);
-      for (var key in this._arrayPropertyMap) {
+      for (let key in this._arrayPropertyMap) {
         if (o[key] != null) {
           this._history[0][key] = this._preparsePropValue(key, o[key]);
         }
@@ -52,7 +50,7 @@ class Tuneable extends Thenable {
     @returns {Object} Passed object with preparsed props.
   */
   // _preParseOptions ( o ) {
-  //   for (var key in o) {
+  //   for (let key in o) {
   //     o[key] = this._preparsePropValue( key, o[key] );
   //   }
   //   return o;
@@ -63,8 +61,8 @@ class Tuneable extends Thenable {
     @param {Object} New options to tune for.
   */
   _transformHistory(o) {
-    for (var key in o) {
-      var value = o[key];
+    for (let key in o) {
+      let value = o[key];
 
       // don't transform for childOptions
       // if ( key === 'childOptions' ) { continue; }
@@ -78,11 +76,13 @@ class Tuneable extends Thenable {
     @param {Any} The new property's value.
   */
   _transformHistoryFor(key, value) {
-    for (var i = 0; i < this._history.length; i++) {
+    for (let i = 0; i < this._history.length; i++) {
       value = this._transformHistoryRecord(i, key, value);
 
       // break if no further history modifications needed
-      if (value == null) { break; }
+      if (value == null) {
+        break;
+      }
     }
   }
 
@@ -97,16 +97,17 @@ class Tuneable extends Thenable {
                        history modifications is needed.
   */
   _transformHistoryRecord(index, key, newVal, currRecord, nextRecord) {
-
     // newVal = this._parseProperty( key, newVal );
-    if (newVal == null) { return null; }
+    if (newVal == null) {
+      return null;
+    }
 
     // fallback to history records, if wasn't specified
-    currRecord = (currRecord == null) ? this._history[index] : currRecord;
-    nextRecord = (nextRecord == null) ? this._history[index + 1] : nextRecord;
+    currRecord = currRecord == null ? this._history[index] : currRecord;
+    nextRecord = nextRecord == null ? this._history[index + 1] : nextRecord;
 
-    var oldVal = currRecord[key],
-      nextVal = (nextRecord == null) ? null : nextRecord[key];
+    let oldVal = currRecord[key],
+      nextVal = nextRecord == null ? null : nextRecord[key];
 
     // if index is 0 - always save the newVal
     // and return non-delta for subsequent modifications
@@ -114,27 +115,27 @@ class Tuneable extends Thenable {
       currRecord[key] = newVal;
 
       // always return on tween properties
-      if (h.isTweenProp(key) && key !== 'duration') { return null; }
+      if (h.isTweenProp(key) && key !== "duration") {
+        return null;
+      }
 
       // nontween properties
-      var isRewriteNext = this._isRewriteNext(oldVal, nextVal),
-        returnVal = (this._isDelta(newVal)) ? h.getDeltaEnd(newVal) : newVal;
-      return (isRewriteNext) ? returnVal : null;
+      let isRewriteNext = this._isRewriteNext(oldVal, nextVal),
+        returnVal = this._isDelta(newVal) ? h.getDeltaEnd(newVal) : newVal;
+      return isRewriteNext ? returnVal : null;
     } else {
-
       // if was delta and came none-deltta - rewrite
       // the start of the delta and stop
       if (this._isDelta(oldVal)) {
         currRecord[key] = { [newVal]: h.getDeltaEnd(oldVal) };
         return null;
       } else {
-
         // if the old value is not delta and the new one is
         currRecord[key] = newVal;
 
         // if the next item has the same value - return the
         // item for subsequent modifications or stop
-        return (this._isRewriteNext(oldVal, nextVal)) ? newVal : null;
+        return this._isRewriteNext(oldVal, nextVal) ? newVal : null;
       }
     }
   }
@@ -148,11 +149,12 @@ class Tuneable extends Thenable {
     @returns {Boolean} If need to rewrite the next value.
   */
   _isRewriteNext(currVal, nextVal) {
-
     // return false if nothing to rewrite next
-    if (nextVal == null && currVal != null) { return false; }
+    if (nextVal == null && currVal != null) {
+      return false;
+    }
 
-    var isEqual = (currVal === nextVal),
+    let isEqual = currVal === nextVal,
       isNextDelta = this._isDelta(nextVal),
       isDelta = this._isDelta(currVal),
       isValueDeltaChain = false,
@@ -174,7 +176,7 @@ class Tuneable extends Thenable {
     @private
   */
   _tuneSubModules() {
-    for (var i = 1; i < this._modules.length; i++) {
+    for (let i = 1; i < this._modules.length; i++) {
       this._modules[i]._tuneNewOptions(this._history[i]);
     }
   }
@@ -185,17 +187,19 @@ class Tuneable extends Thenable {
     @private
   */
   _resetTweens() {
-    var shift = 0,
+    let shift = 0,
       tweens = this.timeline._timelines;
 
     // if `isTimelineLess` return
-    if (tweens == null) { return; }
+    if (tweens == null) {
+      return;
+    }
 
-    for (var i = 0; i < tweens.length; i++) {
-      var tween = tweens[i],
+    for (let i = 0; i < tweens.length; i++) {
+      let tween = tweens[i],
         prevTween = tweens[i - 1];
 
-      shift += (prevTween) ? prevTween._props.repeatTime : 0;
+      shift += prevTween ? prevTween._props.repeatTime : 0;
       this._resetTween(tween, this._history[i], shift);
     }
     this.timeline._setProp(this._props.timeline);
@@ -209,7 +213,8 @@ class Tuneable extends Thenable {
     @param {Number} Optional number to shift tween start time.
   */
   _resetTween(tween, o, shift = 0) {
-    o.shiftTime = shift; tween._setProp(o);
+    o.shiftTime = shift;
+    tween._setProp(o);
   }
 }
 

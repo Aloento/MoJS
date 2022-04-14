@@ -1,6 +1,6 @@
-import h from './h';
-import Tween from 'tween/tween';
-import Timeline from 'tween/timeline';
+import h from "./h";
+import Tween from "./tween/tween";
+import Timeline from "./tween/timeline";
 
 /*
   Class for toggling opacity on bunch of elements
@@ -11,13 +11,11 @@ import Timeline from 'tween/timeline';
     - add then chains
 */
 class Spriter {
-
   /*
     Defaults/APIs
   */
   _declareDefaults() {
     this._defaults = {
-
       /*
         Duration
         @property duration
@@ -40,7 +38,7 @@ class Spriter {
         @property easing
         @type     {String, Function}
       */
-      easing: 'linear.none',
+      easing: "linear.none",
 
       /*
         Repeat times count
@@ -103,26 +101,31 @@ class Spriter {
     };
   }
 
-  constructor(o = { }) {
+  constructor(o = {}) {
     this.o = o;
-    if (!this.o.el) { return h.error('No "el" option specified, aborting'); }
-    this._vars(); this._declareDefaults(); this._extendDefaults(); this._parseFrames();
+    if (!this.o.el) {
+      return h.error('No "el" option specified, aborting');
+    }
+    this._lets();
+    this._declareDefaults();
+    this._extendDefaults();
+    this._parseFrames();
     if (this._frames.length <= 2)
       h.warn(`Spriter: only ${this._frames.length} frames found`);
     if (this._frames.length < 1)
-      h.error('Spriter: there is no frames to animate, aborting');
+      h.error("Spriter: there is no frames to animate, aborting");
     this._createTween();
     return this;
   }
 
   /*
-    Method to declare some variables.
+    Method to declare some letiables.
 
     @method run
     @param  {Object} New options
     @todo   Implement new object merging
   */
-  _vars() {
+  _lets() {
     this._props = h.cloneObj(this.o);
     this.el = this.o.el;
     this._frames = [];
@@ -135,14 +138,18 @@ class Spriter {
     @param  {Object} New options
     @todo   Implement new object merging
   */
-  run() { return this.timeline.play(); }
+  run() {
+    return this.timeline.play();
+  }
 
   /*
     Method to extend _props by options(this.o)
 
     @method _extendDefaults
   */
-  _extendDefaults() { return h.extend(this._props, this._defaults); }
+  _extendDefaults() {
+    return h.extend(this._props, this._defaults);
+  }
 
   /*
     Method to parse frames as child nodes of el.
@@ -151,7 +158,7 @@ class Spriter {
   */
   _parseFrames() {
     this._frames = Array.prototype.slice.call(this.el.children, 0);
-    this._frames.forEach((frame) => frame.style.opacity = 0);
+    this._frames.forEach((frame) => (frame.style.opacity = 0));
     this._frameStep = 1 / this._frames.length;
   }
 
@@ -171,7 +178,8 @@ class Spriter {
       onComplete: () => this._props.onComplete && this._props.onComplete(),
       onUpdate: (p) => this._setProgress(p),
     });
-    this.timeline = new Timeline(); this.timeline.add(this._tween);
+    this.timeline = new Timeline();
+    this.timeline.add(this._tween);
     if (!this._props.isRunLess) this._startTween();
   }
 
@@ -180,7 +188,9 @@ class Spriter {
 
     @method _startTween
   */
-  _startTween() { setTimeout(() => this.timeline.play(), 1); }
+  _startTween() {
+    setTimeout(() => this.timeline.play(), 1);
+  }
 
   /*
     Method to set progress of the sprite
@@ -189,27 +199,31 @@ class Spriter {
     @param  {Number} Progress in range **[0,1]**
   */
   _setProgress(p) {
-
     // get the frame number
-    var proc = Math.floor(p / this._frameStep);
+    let proc = Math.floor(p / this._frameStep);
 
     // react only if frame changes
     if (this._prevFrame != this._frames[proc]) {
-
       // if previous frame isnt current one, hide it
-      if (this._prevFrame) { this._prevFrame.style.opacity = 0; }
+      if (this._prevFrame) {
+        this._prevFrame.style.opacity = 0;
+      }
 
       // if end of animation and isShowEnd flag was specified
       // then show the last frame else show current frame
-      var currentNum = p === 1 && this._props.isShowEnd ? proc - 1 : proc;
+      let currentNum = p === 1 && this._props.isShowEnd ? proc - 1 : proc;
 
       // show the current frame
-      if (this._frames[currentNum]) { this._frames[currentNum].style.opacity = 1; }
+      if (this._frames[currentNum]) {
+        this._frames[currentNum].style.opacity = 1;
+      }
 
       // set previous frame as current
       this._prevFrame = this._frames[proc];
     }
-    if (this._props.onUpdate) { this._props.onUpdate(p); }
+    if (this._props.onUpdate) {
+      this._props.onUpdate(p);
+    }
   }
 }
 

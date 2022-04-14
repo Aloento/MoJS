@@ -1,6 +1,6 @@
-import Tween from 'tween/tween';
-import Timeline from 'tween/timeline';
-import Module from 'src/module';
+import Tween from "./tween";
+import Timeline from "./timeline";
+import Module from "../module";
 
 /*
   Class to define a module ancestor
@@ -10,7 +10,6 @@ import Module from 'src/module';
   @class Tweenable
 */
 class Tweenable extends Module {
-
   /*
     `play` method for the timeline.
     @public
@@ -122,7 +121,6 @@ class Tweenable extends Module {
   // v PRIVATE METHOD(S) v
 
   constructor(o = {}) {
-
     // super of Module
     super(o);
 
@@ -149,13 +147,12 @@ class Tweenable extends Module {
     @private
   */
   _makeTween() {
-
     // pass callbacks context
     this._o.callbacksContext = this._o.callbacksContext || this;
     this.tween = new Tween(this._o);
 
     // make timeline property point to tween one is "no timeline" mode
-    (this._o.isTimelineLess) && (this.timeline = this.tween);
+    this._o.isTimelineLess && (this.timeline = this.tween);
   }
 
   /*
@@ -166,7 +163,6 @@ class Tweenable extends Module {
                     timeline options.
   */
   _makeTimeline() {
-
     // pass callbacks context
     this._o.timeline = this._o.timeline || {};
     this._o.timeline.callbacksContext = this._o.callbacksContext || this;

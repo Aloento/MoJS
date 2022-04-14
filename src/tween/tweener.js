@@ -1,11 +1,11 @@
 class Tweener {
   constructor() {
-    this._vars();
+    this._lets();
     this._listenVisibilityChange();
     return this;
   }
 
-  _vars() {
+  _lets() {
     this.tweens = [];
     this._savedTweens = [];
     this._loop = this._loop.bind(this);
@@ -18,9 +18,13 @@ class Tweener {
     @returns this
   */
   _loop() {
-    if (!this._isRunning) { return false; }
+    if (!this._isRunning) {
+      return false;
+    }
     this._update(window.performance.now());
-    if (!this.tweens.length) { return this._isRunning = false; }
+    if (!this.tweens.length) {
+      return (this._isRunning = false);
+    }
     requestAnimationFrame(this._loop);
     return this;
   }
@@ -30,7 +34,10 @@ class Tweener {
     @private
   */
   _startLoop() {
-    if (this._isRunning) { return; } this._isRunning = true;
+    if (this._isRunning) {
+      return;
+    }
+    this._isRunning = true;
     requestAnimationFrame(this._loop);
   }
 
@@ -38,18 +45,19 @@ class Tweener {
     Method to stop animation loop.
     @private
   */
-  _stopLoop() { this._isRunning = false; }
+  _stopLoop() {
+    this._isRunning = false;
+  }
 
   /*
     Method to update every tween/timeline on animation frame.
     @private
   */
   _update(time) {
-    var i = this.tweens.length;
+    let i = this.tweens.length;
     while (i--) {
-
       // cache the current tween
-      var tween = this.tweens[i];
+      let tween = this.tweens[i];
       if (tween && tween._update(time) === true) {
         this.remove(tween);
         tween._onTweenerFinish();
@@ -63,9 +71,10 @@ class Tweener {
     @param {Object} Tween/Timeline to add.
   */
   add(tween) {
-
     // return if tween is already running
-    if (tween._isRunning) { return; }
+    if (tween._isRunning) {
+      return;
+    }
     tween._isRunning = true;
     this.tweens.push(tween);
     this._startLoop();
@@ -75,16 +84,16 @@ class Tweener {
     Method stop updating all the child tweens/timelines.
     @private
   */
-  removeAll() { this.tweens.length = 0; }
+  removeAll() {
+    this.tweens.length = 0;
+  }
 
   /*
     Method to remove specific tween/timeline form updating.
     @private
   */
   remove(tween) {
-    var index = (typeof tween === 'number')
-      ? tween
-      : this.tweens.indexOf(tween);
+    let index = typeof tween === "number" ? tween : this.tweens.indexOf(tween);
 
     if (index !== -1) {
       tween = this.tweens[index];
@@ -101,30 +110,36 @@ class Tweener {
     @private
   */
   _listenVisibilityChange() {
-    if (typeof document.hidden !== 'undefined') {
-      this._visibilityHidden = 'hidden';
-      this._visibilityChange = 'visibilitychange';
-    } else if (typeof document.mozHidden !== 'undefined') {
-      this._visibilityHidden = 'mozHidden';
-      this._visibilityChange = 'mozvisibilitychange';
-    } else if (typeof document.msHidden !== 'undefined') {
-      this._visibilityHidden = 'msHidden';
-      this._visibilityChange = 'msvisibilitychange';
-    } else if (typeof document.webkitHidden !== 'undefined') {
-      this._visibilityHidden = 'webkitHidden';
-      this._visibilityChange = 'webkitvisibilitychange';
+    if (typeof document.hidden !== "undefined") {
+      this._visibilityHidden = "hidden";
+      this._visibilityChange = "visibilitychange";
+    } else if (typeof document.mozHidden !== "undefined") {
+      this._visibilityHidden = "mozHidden";
+      this._visibilityChange = "mozvisibilitychange";
+    } else if (typeof document.msHidden !== "undefined") {
+      this._visibilityHidden = "msHidden";
+      this._visibilityChange = "msvisibilitychange";
+    } else if (typeof document.webkitHidden !== "undefined") {
+      this._visibilityHidden = "webkitHidden";
+      this._visibilityChange = "webkitvisibilitychange";
     }
 
-    document.addEventListener(this._visibilityChange,
-      this._onVisibilityChange, false);
+    document.addEventListener(
+      this._visibilityChange,
+      this._onVisibilityChange,
+      false
+    );
   }
 
   /*
     Method that will fire on visibility change.
   */
   _onVisibilityChange() {
-    if (document[this._visibilityHidden]) { this._savePlayingTweens(); }
-    else { this._restorePlayingTweens(); }
+    if (document[this._visibilityHidden]) {
+      this._savePlayingTweens();
+    } else {
+      this._restorePlayingTweens();
+    }
   }
 
   /*
@@ -149,5 +164,4 @@ class Tweener {
   }
 }
 
-var t = new Tweener;
-export default t;
+export default new Tweener();

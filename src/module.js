@@ -1,11 +1,10 @@
-import h from './h';
+import h from "./h";
 
 /*
   Base class for module. Extends and parses defaults.
 */
 class Module {
   constructor(o = {}) {
-
     // this._isIt = o.isIt;
     // delete o.isIt;
     this._o = o;
@@ -28,7 +27,7 @@ class Module {
     this._declareDefaults();
     this._extendDefaults();
 
-    this._vars();
+    this._lets();
     this._render();
   }
 
@@ -37,14 +36,14 @@ class Module {
     @private
   */
   _declareDefaults() {
-    this._defaults = { };
+    this._defaults = {};
   }
 
   /*
-    Method to declare module's variables.
+    Method to declare module's letiables.
     @private
   */
-  _vars() {
+  _lets() {
     this._progress = 0;
     this._strokeDasharrayBuffer = [];
   }
@@ -53,7 +52,7 @@ class Module {
     Method to render on initialization.
     @private
   */
-  _render() { }
+  _render() {}
 
   /*
     Method to set property on the module.
@@ -64,9 +63,13 @@ class Module {
                   undefined if the first param is object.
   */
   _setProp(attr, value) {
-    if (typeof attr === 'object') {
-      for (var key in attr) { this._assignProp(key, attr[key]); }
-    } else { this._assignProp(attr, value); }
+    if (typeof attr === "object") {
+      for (let key in attr) {
+        this._assignProp(key, attr[key]);
+      }
+    } else {
+      this._assignProp(attr, value);
+    }
   }
 
   /*
@@ -84,14 +87,17 @@ class Module {
     @private
   */
   _show() {
-    var p = this._props;
-    if (!this.el) { return; }
+    let p = this._props;
+    if (!this.el) {
+      return;
+    }
 
     if (p.isSoftHide) {
-
       // this.el.style.opacity = p.opacity;
       this._showByTransform();
-    } else { this.el.style.display = 'block'; }
+    } else {
+      this.el.style.display = "block";
+    }
 
     this._isShown = true;
   }
@@ -101,13 +107,16 @@ class Module {
     @private
   */
   _hide() {
-    if (!this.el) { return; }
+    if (!this.el) {
+      return;
+    }
 
     if (this._props.isSoftHide) {
-
       // this.el.style.opacity = 0;
-      h.setPrefixedStyle(this.el, 'transform', 'scale(0)');
-    } else { this.el.style.display = 'none'; }
+      h.setPrefixedStyle(this.el, "transform", "scale(0)");
+    } else {
+      this.el.style.display = "none";
+    }
 
     this._isShown = false;
   }
@@ -126,12 +135,12 @@ class Module {
     @returns {Number} Parsed options value.
   */
   _parseOptionString(value) {
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       if (value.match(/stagger/)) {
         value = h.parseStagger(value, this._index);
       }
     }
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       if (value.match(/rand/)) {
         value = h.parseRand(value);
       }
@@ -146,7 +155,9 @@ class Module {
     @returns {String} Parsed options value.
   */
   _parsePositionOption(key, value) {
-    if (h.unitOptionMap[key]) { value = h.parseUnit(value).string; }
+    if (h.unitOptionMap[key]) {
+      value = h.parseUnit(value).string;
+    }
     return value;
   }
 
@@ -157,18 +168,18 @@ class Module {
     @returns {String} Parsed options value.
   */
   _parseStrokeDashOption(key, value) {
-    var result = value;
+    let result = value;
 
     // parse numeric/percent values for strokeDash.. properties
     if (this._arrayPropertyMap[key]) {
       result = [];
       switch (typeof value) {
-        case 'number':
+        case "number":
           result.push(h.parseUnit(value));
           break;
-        case 'string':
-          var array = value.split(' ');
-          for (var i = 0; i < array.length; i++) {
+        case "string":
+          let array = value.split(" ");
+          for (let i = 0; i < array.length; i++) {
             result.push(h.parseUnit(array[i]));
           }
           break;
@@ -184,7 +195,7 @@ class Module {
     @returns {Boolean}
   */
   _isDelta(optionsValue) {
-    var isObject = h.isObject(optionsValue);
+    let isObject = h.isObject(optionsValue);
     isObject = isObject && !optionsValue.unit;
     return !(!isObject || h.isArray(optionsValue) || h.isDOM(optionsValue));
   }
@@ -197,25 +208,35 @@ class Module {
     @param {Object} Option value to get the delta for.
   */
   _getDelta(key, optionsValue) {
-    var delta;
-    if ((key === 'left' || key === 'top') && !this._o.ctx) {
-      h.warn(`Consider to animate x/y properties instead of left/top,
-        as it would be much more performant`, optionsValue);
+    let delta;
+    if ((key === "left" || key === "top") && !this._o.ctx) {
+      h.warn(
+        `Consider to animate x/y properties instead of left/top,
+        as it would be much more performant`,
+        optionsValue
+      );
     }
 
     // skip delta calculation for a property if it is listed
     // in skipPropsDelta object
-    if (this._skipPropsDelta && this._skipPropsDelta[key]) { return; }
+    if (this._skipPropsDelta && this._skipPropsDelta[key]) {
+      return;
+    }
 
     // get delta
     delta = h.parseDelta(key, optionsValue, this._index);
 
     // if successfully parsed - save it
-    if (delta.type != null) { this._deltas[key] = delta; }
+    if (delta.type != null) {
+      this._deltas[key] = delta;
+    }
 
-    var deltaEnd = (typeof delta.end === 'object')
-      ? (delta.end.value === 0) ? 0 : delta.end.string
-      : delta.end;
+    let deltaEnd =
+      typeof delta.end === "object"
+        ? delta.end.value === 0
+          ? 0
+          : delta.end.string
+        : delta.end;
 
     // set props to end value of the delta
     // 0 should be 0 regardless units
@@ -230,12 +251,11 @@ class Module {
   _extendDefaults() {
     this._props = {};
     this._deltas = {};
-    for (var key in this._defaults) {
-
+    for (let key in this._defaults) {
       // skip property if it is listed in _skipProps
       // if (this._skipProps && this._skipProps[key]) { continue; }
       // copy the properties to the _o object
-      var value = (this._o[key] != null) ? this._o[key] : this._defaults[key];
+      let value = this._o[key] != null ? this._o[key] : this._defaults[key];
 
       // parse option
       this._parseOption(key, value);
@@ -248,17 +268,15 @@ class Module {
     @param {Object} Options object to tune to.
   */
   _tuneNewOptions(o) {
-
     // hide the module before tuning it's options
     // cuz the user could see the change
     this._hide();
-    for (var key in o) {
-
+    for (let key in o) {
       // skip property if it is listed in _skipProps
       // if (this._skipProps && this._skipProps[key]) { continue; }
       // copy the properties to the _o object
       // delete the key from deltas
-      o && (delete this._deltas[key]);
+      o && delete this._deltas[key];
 
       // rewrite _o record
       this._o[key] = o[key];
@@ -275,11 +293,10 @@ class Module {
     @param {Any} Option value.
   */
   _parseOption(name, value) {
-
     // if delta property
     if (this._isDelta(value) && !this._skipPropsDelta[name]) {
       this._getDelta(name, value);
-      var deltaEnd = h.getDeltaEnd(value);
+      let deltaEnd = h.getDeltaEnd(value);
       return this._assignProp(name, this._parseProperty(name, deltaEnd));
     }
 
@@ -294,7 +311,6 @@ class Module {
     @returns {Any}  Parsed property value.
   */
   _parsePreArrayProperty(name, value) {
-
     // parse stagger and rand values
     value = this._parseOptionString(value);
 
@@ -310,9 +326,10 @@ class Module {
     @returns {Any}  Parsed property value.
   */
   _parseProperty(name, value) {
-
     // parse `HTML` element in `parent` option
-    if (name === 'parent') { return h.parseEl(value); }
+    if (name === "parent") {
+      return h.parseEl(value);
+    }
 
     // parse `stagger`, `rand` and `position`
     value = this._parsePreArrayProperty(name, value);
@@ -329,16 +346,15 @@ class Module {
     @returns {Object} Delta with parsed parameters.
   */
   _parseDeltaValues(name, delta) {
-
     // return h.parseDelta( name, delta, this._index );
 
-    var d = {};
-    for (var key in delta) {
-      var value = delta[key];
+    let d = {};
+    for (let key in delta) {
+      let value = delta[key];
 
       // delete delta[key];
       // add parsed properties
-      var newEnd = this._parsePreArrayProperty(name, value);
+      let newEnd = this._parsePreArrayProperty(name, value);
       d[this._parsePreArrayProperty(name, key)] = newEnd;
     }
     return d;
@@ -352,7 +368,7 @@ class Module {
     @returns {Any}  Parsed property value.
   */
   _preparsePropValue(key, value) {
-    return (this._isDelta(value))
+    return this._isDelta(value)
       ? this._parseDeltaValues(key, value)
       : this._parsePreArrayProperty(key, value);
   }
@@ -364,32 +380,32 @@ class Module {
     @param {Number} Progress to calculate - [0..1].
   */
   _calcCurrentProps(easedProgress, p) {
-
-    for (var key in this._deltas) {
-
-      var value = this._deltas[key];
+    for (let key in this._deltas) {
+      let value = this._deltas[key];
 
       // get eased progress from delta easing if defined and not curve
-      var isCurve = !!value.curve;
-      var ep = (value.easing != null && !isCurve)
-        ? value.easing(p) : easedProgress;
+      let isCurve = !!value.curve;
+      let ep =
+        value.easing != null && !isCurve ? value.easing(p) : easedProgress;
 
-      if (value.type === 'array') {
-        var arr;
+      if (value.type === "array") {
+        let arr;
 
         // if prop property is array - reuse it else - create an array
         if (h.isArray(this._props[key])) {
           arr = this._props[key];
           arr.length = 0;
-        } else { arr = []; }
+        } else {
+          arr = [];
+        }
 
         // just optimization to prevent curve
         // calculations on every array item
-        var proc = (isCurve) ? value.curve(p) : null;
+        let proc = isCurve ? value.curve(p) : null;
 
-        for (var i = 0; i < value.delta.length; i++) {
-          var item = value.delta[i],
-            dash = (!isCurve)
+        for (let i = 0; i < value.delta.length; i++) {
+          let item = value.delta[i],
+            dash = !isCurve
               ? value.start[i].value + ep * item.value
               : proc * (value.start[i].value + p * item.value);
           arr.push({
@@ -400,27 +416,25 @@ class Module {
         }
 
         this._props[key] = arr;
-
-      } else if (value.type === 'number') {
-        this._props[key] = (!isCurve)
+      } else if (value.type === "number") {
+        this._props[key] = !isCurve
           ? value.start + ep * value.delta
           : value.curve(p) * (value.start + p * value.delta);
-      } else if (value.type === 'unit') {
-        var currentValue = (!isCurve)
+      } else if (value.type === "unit") {
+        let currentValue = !isCurve
           ? value.start.value + ep * value.delta
           : value.curve(p) * (value.start.value + p * value.delta);
 
         this._props[key] = `${currentValue}${value.end.unit}`;
-
-      } else if (value.type === 'color') {
-        var r, g, b, a;
+      } else if (value.type === "color") {
+        let r, g, b, a;
         if (!isCurve) {
           r = parseInt(value.start.r + ep * value.delta.r, 10);
           g = parseInt(value.start.g + ep * value.delta.g, 10);
           b = parseInt(value.start.b + ep * value.delta.b, 10);
           a = parseFloat(value.start.a + ep * value.delta.a);
         } else {
-          var cp = value.curve(p);
+          let cp = value.curve(p);
           r = parseInt(cp * (value.start.r + p * value.delta.r), 10);
           g = parseInt(cp * (value.start.g + p * value.delta.g), 10);
           b = parseInt(cp * (value.start.b + p * value.delta.b), 10);

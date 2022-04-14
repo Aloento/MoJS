@@ -1,26 +1,25 @@
-import h from './h';
-import shapesMap from 'shapes/shapesMap';
-import stagger from './stagger';
-import tweener from 'tween/tweener';
-import easing from 'easing/easing';
-import Shape from './shape';
-import ShapeSwirl from './shape-swirl';
-import Burst from './burst';
-import Html from './html';
-import Spriter from './spriter';
-import MotionPath from './motion-path';
-import Tween from 'tween/tween';
-import Timeline from 'tween/timeline';
-import Tweenable from 'tween/tweenable';
-import Thenable from './thenable';
-import Tunable from './tunable';
-import Delta from 'delta/delta';
-import Deltas from 'delta/deltas';
-import Module from './module';
+import h from "./h";
+import shapesMap from "./shapes/shapesMap";
+import stagger from "./stagger";
+import tweener from "./tween/tweener";
+import easing from "./easing/easing";
+import Shape from "./shape";
+import ShapeSwirl from "./shape-swirl";
+import Burst from "./burst";
+import Html from "./html";
+import Spriter from "./spriter";
+import MotionPath from "./motion-path";
+import Tween from "./tween/tween";
+import Timeline from "./tween/timeline";
+import Tweenable from "./tween/tweenable";
+import Thenable from "./thenable";
+import Tunable from "./tunable";
+import Delta from "./delta/delta";
+import Deltas from "./delta/deltas";
+import Module from "./module";
 
 let mojs = {
-  revision: build.revision,
-  isDebug: build.mode !== 'production',
+  isDebug: process?.env?.NODE_ENV === "development",
   helpers: h,
   Shape,
   ShapeSwirl,
@@ -50,7 +49,7 @@ let mojs = {
   Swirl: ShapeSwirl,
 };
 
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   window.mojs = mojs;
 }
 

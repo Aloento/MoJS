@@ -35,20 +35,20 @@
 //   }
 // });
 
-import h from 'src/h';
-import easing from 'easing/easing';
-import Timeline from 'tween/timeline';
-import Tween from 'tween/tween';
-import Delta from 'delta/delta';
+import h from "../h";
+import easing from "../easing/easing";
+import Timeline from "../tween/timeline";
+import Tween from "../tween/tween";
+import Delta from "./delta";
 
 // get tween properties
 const obj = {};
 Tween.prototype._declareDefaults.call(obj);
 const keys = Object.keys(obj._defaults);
-for (var i = 0; i < keys.length; i++) {
+for (let i = 0; i < keys.length; i++) {
   obj._defaults[keys[i]] = 1;
 }
-obj._defaults['timeline'] = 1;
+obj._defaults["timeline"] = 1;
 const TWEEN_PROPERTIES = obj._defaults;
 
 class Deltas {
@@ -56,29 +56,28 @@ class Deltas {
     this._o = o;
 
     this._shortColors = {
-      transparent: 'rgba(0,0,0,0)',
-      none: 'rgba(0,0,0,0)',
-      aqua: 'rgb(0,255,255)',
-      black: 'rgb(0,0,0)',
-      blue: 'rgb(0,0,255)',
-      fuchsia: 'rgb(255,0,255)',
-      gray: 'rgb(128,128,128)',
-      green: 'rgb(0,128,0)',
-      lime: 'rgb(0,255,0)',
-      maroon: 'rgb(128,0,0)',
-      navy: 'rgb(0,0,128)',
-      olive: 'rgb(128,128,0)',
-      purple: 'rgb(128,0,128)',
-      red: 'rgb(255,0,0)',
-      silver: 'rgb(192,192,192)',
-      teal: 'rgb(0,128,128)',
-      white: 'rgb(255,255,255)',
-      yellow: 'rgb(255,255,0)',
-      orange: 'rgb(255,128,0)',
+      transparent: "rgba(0,0,0,0)",
+      none: "rgba(0,0,0,0)",
+      aqua: "rgb(0,255,255)",
+      black: "rgb(0,0,0)",
+      blue: "rgb(0,0,255)",
+      fuchsia: "rgb(255,0,255)",
+      gray: "rgb(128,128,128)",
+      green: "rgb(0,128,0)",
+      lime: "rgb(0,255,0)",
+      maroon: "rgb(128,0,0)",
+      navy: "rgb(0,0,128)",
+      olive: "rgb(128,128,0)",
+      purple: "rgb(128,0,128)",
+      red: "rgb(255,0,0)",
+      silver: "rgb(192,192,192)",
+      teal: "rgb(0,128,128)",
+      white: "rgb(255,255,255)",
+      yellow: "rgb(255,255,0)",
+      orange: "rgb(255,128,0)",
     };
 
-    this._ignoreDeltasMap = { prevChainModule: 1,
-      masterModule: 1 };
+    this._ignoreDeltasMap = { prevChainModule: 1, masterModule: 1 };
 
     this._parseDeltas(o.options);
     this._createDeltas();
@@ -91,7 +90,7 @@ class Deltas {
     @param {Boolean} If before start time (true) or after end time (false).
   */
   refresh(isBefore) {
-    for (var i = 0; i < this._deltas.length; i++) {
+    for (let i = 0; i < this._deltas.length; i++) {
       this._deltas[i].refresh(isBefore);
     }
     return this;
@@ -102,7 +101,7 @@ class Deltas {
     @public
   */
   restore() {
-    for (var i = 0; i < this._deltas.length; i++) {
+    for (let i = 0; i < this._deltas.length; i++) {
       this._deltas[i].restore();
     }
     return this;
@@ -114,7 +113,6 @@ class Deltas {
     @param {Object} Timeline options.
   */
   _createTimeline() {
-
     // const o = this._o;
     // opts.timeline = opts.timeline || {};
     // opts.timeline.callbackOverrides = {
@@ -124,7 +122,7 @@ class Deltas {
     // send callbacksContext to timeline if set
     // o.callbacksContext && (opts.timeline.callbacksContext = o.callbacksContext);
     // opts.timeline
-    this.timeline = new Timeline;
+    this.timeline = new Timeline();
     this.timeline.add(this._deltas);
   }
 
@@ -137,15 +135,13 @@ class Deltas {
 
     // create main delta object
     this._deltas.push(
-      this._createDelta(this._mainDeltas, this._mainTweenOptions),
+      this._createDelta(this._mainDeltas, this._mainTweenOptions)
     );
 
     // create child delta object
-    for (var i = 0; i < this._childDeltas.length; i++) {
-      var delta = this._childDeltas[i];
-      this._deltas.push(
-        this._createDelta([delta.delta], delta.tweenOptions),
-      );
+    for (let i = 0; i < this._childDeltas.length; i++) {
+      let delta = this._childDeltas[i];
+      this._deltas.push(this._createDelta([delta.delta], delta.tweenOptions));
     }
   }
 
@@ -173,7 +169,6 @@ class Deltas {
     @param {Object} Options object to parse the deltas from.
   */
   _parseDeltas(obj) {
-
     // spilt main animation properties and main tween properties
     const mainSplit = this._splitTweenOptions(obj);
 
@@ -188,18 +183,22 @@ class Deltas {
     const keys = Object.keys(opts);
 
     // loop thru all properties without tween ones
-    for (var i = 0; i < keys.length; i++) {
-      var key = keys[i];
+    for (let i = 0; i < keys.length; i++) {
+      let key = keys[i];
 
       // is property is delta - parse it
       if (this._isDelta(opts[key]) && !this._ignoreDeltasMap[key]) {
-        var delta = this._splitAndParseDelta(key, opts[key]);
+        let delta = this._splitAndParseDelta(key, opts[key]);
 
         // if parsed object has no tween values - it's delta of the main object
-        if (!delta.tweenOptions) { this._mainDeltas.push(delta.delta); }
+        if (!delta.tweenOptions) {
+          this._mainDeltas.push(delta.delta);
+        }
 
         // otherwise it is distinct delta object
-        else { this._childDeltas.push(delta); }
+        else {
+          this._childDeltas.push(delta);
+        }
       }
     }
   }
@@ -222,16 +221,15 @@ class Deltas {
   }
 
   /*
-    Method to parse delta by delegating the variables to _parse*Delta methods.
+    Method to parse delta by delegating the letiables to _parse*Delta methods.
     @private
     @param {String} Property name.
     @param {Object} Raw delta object.
     @param {Number} Module index.
   */
   _parseDelta(name, object, index) {
-
     // if name is in _o.customProps - parse it regarding the type
-    return (this._o.customProps && (this._o.customProps[name] != null))
+    return this._o.customProps && this._o.customProps[name] != null
       ? this._parseDeltaByCustom(name, object, index)
       : this._parseDeltaByGuess(name, object, index);
   }
@@ -267,22 +265,24 @@ class Deltas {
     const o = this._o;
 
     // color values
-    if (isNaN(parseFloat(start)) && !start.match(/rand\(/) && !start.match(/stagger\(/)) {
+    if (
+      isNaN(parseFloat(start)) &&
+      !start.match(/rand\(/) &&
+      !start.match(/stagger\(/)
+    ) {
       return this._parseColorDelta(name, object);
 
-    // array values
+      // array values
     } else if (o.arrayPropertyMap && o.arrayPropertyMap[name]) {
       return this._parseArrayDelta(name, object);
 
-    // unit or number values
+      // unit or number values
     } else {
-      return (o.numberPropertyMap && o.numberPropertyMap[name])
-
-        // if the property is in the number property map - parse it like number
-        ? this._parseNumberDelta(name, object, index)
-
-        // otherwise - like number with units
-        : this._parseUnitDelta(name, object, index);
+      return o.numberPropertyMap && o.numberPropertyMap[name]
+        ? // if the property is in the number property map - parse it like number
+          this._parseNumberDelta(name, object, index)
+        : // otherwise - like number with units
+          this._parseUnitDelta(name, object, index);
     }
   }
 
@@ -298,9 +298,9 @@ class Deltas {
 
     const keys = Object.keys(delta),
       tweenOptions = {};
-    var isTween = null;
+    let isTween = null;
 
-    for (var i = 0; i < keys.length; i++) {
+    for (let i = 0; i < keys.length; i++) {
       let key = keys[i];
       if (TWEEN_PROPERTIES[key]) {
         if (delta[key] != null) {
@@ -312,7 +312,7 @@ class Deltas {
     }
     return {
       delta,
-      tweenOptions: (isTween) ? tweenOptions : undefined,
+      tweenOptions: isTween ? tweenOptions : undefined,
     };
   }
 
@@ -323,7 +323,7 @@ class Deltas {
     @returns {Boolean}
   */
   _isDelta(optionsValue) {
-    var isObject = h.isObject(optionsValue);
+    let isObject = h.isObject(optionsValue);
     isObject = isObject && !optionsValue.unit;
     return !(!isObject || h.isArray(optionsValue) || h.isDOM(optionsValue));
   }
@@ -336,8 +336,11 @@ class Deltas {
     @returns {Object} Parsed delta.
   */
   _parseColorDelta(key, value) {
-    if (key === 'strokeLinecap') {
-      h.warn('Sorry, stroke-linecap property is not animatable yet, using the start(#{start}) value instead', value);
+    if (key === "strokeLinecap") {
+      h.warn(
+        "Sorry, stroke-linecap property is not animatable yet, using the start(#{start}) value instead",
+        value
+      );
       return {};
     }
     const preParse = this._preparseDelta(value);
@@ -346,7 +349,7 @@ class Deltas {
       endColorObj = this._makeColorObj(preParse.end);
 
     const delta = {
-      type: 'color',
+      type: "color",
       name: key,
       start: startColorObj,
       end: endColorObj,
@@ -376,13 +379,13 @@ class Deltas {
 
     h.normDashArrays(startArr, endArr);
 
-    for (var i = 0; i < startArr.length; i++) {
+    for (let i = 0; i < startArr.length; i++) {
       let end = endArr[i];
       h.mergeUnits(startArr[i], end, key);
     }
 
     const delta = {
-      type: 'array',
+      type: "array",
       name: key,
       start: startArr,
       end: endArr,
@@ -409,7 +412,7 @@ class Deltas {
 
     h.mergeUnits(start, end, key);
     const delta = {
-      type: 'unit',
+      type: "unit",
       name: key,
       start: start,
       end: end,
@@ -434,7 +437,7 @@ class Deltas {
       start = parseFloat(h.parseStringOption(preParse.start, index));
 
     const delta = {
-      type: 'number',
+      type: "number",
       name: key,
       start: start,
       end: end,
@@ -454,7 +457,6 @@ class Deltas {
               @property {String, Number} End value.
   */
   _preparseDelta(value) {
-
     // clone value object
     value = { ...value };
 
@@ -470,9 +472,7 @@ class Deltas {
     const start = Object.keys(value)[0],
       end = value[start];
 
-    return { start,
-      end,
-      curve };
+    return { start, end, curve };
   }
 
   /*
@@ -482,15 +482,16 @@ class Deltas {
     @returns {Object} Parsed color value.
   */
   _makeColorObj(color) {
-
     // HEX
     let colorObj = {};
-    if (color[0] === '#') {
-      const result = /^#?([a-f\d]{1,2})([a-f\d]{1,2})([a-f\d]{1,2})$/i.exec(color);
+    if (color[0] === "#") {
+      const result = /^#?([a-f\d]{1,2})([a-f\d]{1,2})([a-f\d]{1,2})$/i.exec(
+        color
+      );
       if (result) {
-        const r = (result[1].length === 2) ? result[1] : result[1] + result[1],
-          g = (result[2].length === 2) ? result[2] : result[2] + result[2],
-          b = (result[3].length === 2) ? result[3] : result[3] + result[3];
+        const r = result[1].length === 2 ? result[1] : result[1] + result[1],
+          g = result[2].length === 2 ? result[2] : result[2] + result[2],
+          b = result[3].length === 2 ? result[3] : result[3] + result[3];
 
         colorObj = {
           r: parseInt(r, 16),
@@ -503,24 +504,28 @@ class Deltas {
 
     // not HEX
     // shorthand color and rgb()
-    if (color[0] !== '#') {
-      const isRgb = color[0] === 'r' && color[1] === 'g' && color[2] === 'b';
+    if (color[0] !== "#") {
+      const isRgb = color[0] === "r" && color[1] === "g" && color[2] === "b";
       let rgbColor;
 
       // rgb color
-      if (isRgb) { rgbColor = color; }
+      if (isRgb) {
+        rgbColor = color;
+      }
 
       // shorthand color name
       if (!isRgb) {
         if (!this._shortColors[color]) {
           h.div.style.color = color;
           rgbColor = h.computedStyle(h.div).color;
-        } else { rgbColor = this._shortColors[color]; }
+        } else {
+          rgbColor = this._shortColors[color];
+        }
       }
 
-      const regexString1 = '^rgba?\\((\\d{1,3}),\\s?(\\d{1,3}),',
-        regexString2 = '\\s?(\\d{1,3}),?\\s?(\\d{1}|0?\\.\\d{1,})?\\)$',
-        result = new RegExp(regexString1 + regexString2, 'gi').exec(rgbColor),
+      const regexString1 = "^rgba?\\((\\d{1,3}),\\s?(\\d{1,3}),",
+        regexString2 = "\\s?(\\d{1,3}),?\\s?(\\d{1}|0?\\.\\d{1,})?\\)$",
+        result = new RegExp(regexString1 + regexString2, "gi").exec(rgbColor),
         alpha = parseFloat(result[4] || 1);
 
       if (result) {
@@ -528,7 +533,7 @@ class Deltas {
           r: parseInt(result[1], 10),
           g: parseInt(result[2], 10),
           b: parseInt(result[3], 10),
-          a: ((alpha != null) && !isNaN(alpha)) ? alpha : 1,
+          a: alpha != null && !isNaN(alpha) ? alpha : 1,
         };
       }
     }
@@ -546,18 +551,20 @@ class Deltas {
     const arr = [];
 
     // plain number
-    if (typeof string === 'number' && !isNaN(string)) {
+    if (typeof string === "number" && !isNaN(string)) {
       arr.push(h.parseUnit(string));
       return arr;
     }
 
     // string array
-    string.trim().split(/\s+/gim).forEach((str) => {
-      arr.push(h.parseUnit(h.parseIfRand(str)));
-    });
+    string
+      .trim()
+      .split(/\s+/gim)
+      .forEach((str) => {
+        arr.push(h.parseUnit(h.parseIfRand(str)));
+      });
     return arr;
   }
-
 }
 
 export default Deltas;

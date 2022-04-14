@@ -1,5 +1,5 @@
-import h from './h';
-import Shape from './shape';
+import h from "./h";
+import Shape from "./shape";
 
 /*
   *TODO:*
@@ -8,7 +8,6 @@ import Shape from './shape';
 */
 
 class ShapeSwirl extends Shape {
-
   /*
     Method to declare _defaults and other default objects.
     @private
@@ -71,7 +70,9 @@ class ShapeSwirl extends Shape {
     @param {Object} Options object to tune to.
   */
   _tuneNewOptions(o) {
-    if (o == null) { return; }
+    if (o == null) {
+      return;
+    }
 
     super._tuneNewOptions(o);
     if (o.x != null || o.y != null) {
@@ -84,13 +85,13 @@ class ShapeSwirl extends Shape {
     @private
   */
   _calcPosData() {
-    var x = this._getPosValue('x'),
-      y = this._getPosValue('y'),
-      rotate = (90 + Math.atan((y.delta / x.delta) || 0) * h.RAD_TO_DEG);
+    let x = this._getPosValue("x"),
+      y = this._getPosValue("y"),
+      rotate = 90 + Math.atan(y.delta / x.delta || 0) * h.RAD_TO_DEG;
 
     this._posData = {
       radius: Math.sqrt(x.delta * x.delta + y.delta * y.delta),
-      rotate: (x.delta < 0) ? rotate + 180 : rotate,
+      rotate: x.delta < 0 ? rotate + 180 : rotate,
       x,
       y,
     };
@@ -105,9 +106,8 @@ class ShapeSwirl extends Shape {
     @param {String} Name of the property.
   */
   _getPosValue(name) {
-    var delta = this._deltas[name];
+    let delta = this._deltas[name];
     if (delta) {
-
       // delete from deltas to prevent normal
       delete this._deltas[name];
       return {
@@ -117,11 +117,8 @@ class ShapeSwirl extends Shape {
         units: delta.end.unit,
       };
     } else {
-      var pos = h.parseUnit(this._props[name]);
-      return { start: pos.value,
-        end: pos.value,
-        delta: 0,
-        units: pos.unit };
+      let pos = h.parseUnit(this._props[name]);
+      return { start: pos.value, end: pos.value, delta: 0, units: pos.unit };
     }
   }
 
@@ -148,10 +145,10 @@ class ShapeSwirl extends Shape {
     @param {Number} Current progress in [0...1]
   */
   _calcSwirlXY(proc) {
-    var p = this._props,
+    let p = this._props,
       rotate = this._posData.rotate + p.degreeShift,
       point = h.getRadialPoint({
-        rotate: (p.isSwirl) ? rotate + this._getSwirl(proc) : rotate,
+        rotate: p.isSwirl ? rotate + this._getSwirl(proc) : rotate,
         radius: proc * this._posData.radius * p.pathScale,
         center: {
           x: this._posData.x.start,
@@ -160,18 +157,26 @@ class ShapeSwirl extends Shape {
       });
 
     // if foreign svg canvas - set position without units
-    var x = point.x,
+    let x = point.x,
       y = point.y,
       smallNumber = 0.000001;
 
     // remove very small numbers to prevent exponential forms
-    if (x > 0 && x < smallNumber) { x = smallNumber; }
-    if (y > 0 && y < smallNumber) { y = smallNumber; }
-    if (x < 0 && x > -smallNumber) { x = -smallNumber; }
-    if (y < 0 && y > -smallNumber) { y = -smallNumber; }
+    if (x > 0 && x < smallNumber) {
+      x = smallNumber;
+    }
+    if (y > 0 && y < smallNumber) {
+      y = smallNumber;
+    }
+    if (x < 0 && x > -smallNumber) {
+      x = -smallNumber;
+    }
+    if (y < 0 && y > -smallNumber) {
+      y = -smallNumber;
+    }
 
-    p.x = (this._o.ctx) ? x : `${x}${this._posData.x.units}`;
-    p.y = (this._o.ctx) ? y : `${y}${this._posData.y.units}`;
+    p.x = this._o.ctx ? x : `${x}${this._posData.x.units}`;
+    p.y = this._o.ctx ? y : `${y}${this._posData.y.units}`;
   }
 
   /*
@@ -181,7 +186,7 @@ class ShapeSwirl extends Shape {
     @returns {Number} Progress of the swirl.
   */
   _getSwirl(proc) {
-    var p = this._props;
+    let p = this._props;
     return p.direction * p.swirlSize * Math.sin(p.swirlFrequency * proc);
   }
 
@@ -192,9 +197,8 @@ class ShapeSwirl extends Shape {
     @overrides @ Shape.
   */
   _draw() {
-
     // call _draw or just _drawEl @ Shape depending if there is `shape`
-    var methodName = (this._props.isWithShape) ? '_draw' : '_drawEl';
+    let methodName = this._props.isWithShape ? "_draw" : "_drawEl";
     Shape.prototype[methodName].call(this);
   }
 }

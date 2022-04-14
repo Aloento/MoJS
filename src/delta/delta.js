@@ -1,7 +1,6 @@
-import Tween from 'tween/tween';
+import Tween from "../tween/tween";
 
 class Delta {
-
   constructor(o = {}) {
     this._o = o;
     this._createTween(o.tweenOptions);
@@ -20,9 +19,9 @@ class Delta {
   refresh(isBefore) {
     this._previousValues = [];
 
-    var deltas = this._o.deltas;
-    for (var i = 0; i < deltas.length; i++) {
-      var name = deltas[i].name;
+    let deltas = this._o.deltas;
+    for (let i = 0; i < deltas.length; i++) {
+      let name = deltas[i].name;
       this._previousValues.push({
         name,
         value: this._o.props[name],
@@ -39,8 +38,8 @@ class Delta {
     @returns this.
   */
   restore() {
-    var prev = this._previousValues;
-    for (var i = 0; i < prev.length; i++) {
+    let prev = this._previousValues;
+    for (let i = 0; i < prev.length; i++) {
       const record = prev[i];
       this._o.props[record.name] = record.value;
     }
@@ -53,15 +52,17 @@ class Delta {
     @param {Object} Options object.
   */
   _createTween(o = {}) {
-    var it = this;
+    let it = this;
     o.callbackOverrides = {
-      onUpdate(ep, p) { it._calcCurrentProps(ep, p); },
+      onUpdate(ep, p) {
+        it._calcCurrentProps(ep, p);
+      },
     };
 
     // if not chained - add the onRefresh callback
     // to refresh the tween when needed
     if (!this._o.isChained) {
-      o.callbackOverrides.onRefresh = function(isBefore, ep, p) {
+      o.callbackOverrides.onRefresh = function (isBefore, ep, p) {
         it._calcCurrentProps(ep, p);
       };
     }
@@ -77,9 +78,9 @@ class Delta {
     @param {Number} Progress to calculate - [0..1].
   */
   _calcCurrentProps(easedProgress, p) {
-    var deltas = this._o.deltas;
-    for (var i = 0; i < deltas.length; i++) {
-      var type = deltas[i].type;
+    let deltas = this._o.deltas;
+    for (let i = 0; i < deltas.length; i++) {
+      let type = deltas[i].type;
       this[`_calcCurrent_${type}`](deltas[i], easedProgress, p);
     }
   }
@@ -91,7 +92,10 @@ class Delta {
     @param {Number} Plain progress [0..1].
   */
   _calcCurrent_color(delta, ep, p) {
-    var r, g, b, a,
+    let r,
+      g,
+      b,
+      a,
       start = delta.start,
       d = delta.delta;
     if (!delta.curve) {
@@ -100,7 +104,7 @@ class Delta {
       b = parseInt(start.b + ep * d.b, 10);
       a = parseFloat(start.a + ep * d.a);
     } else {
-      var cp = delta.curve(p);
+      let cp = delta.curve(p);
       r = parseInt(cp * (start.r + p * d.r), 10);
       g = parseInt(cp * (start.g + p * d.g), 10);
       b = parseInt(cp * (start.b + p * d.b), 10);
@@ -116,7 +120,7 @@ class Delta {
     @param {Number} Plain progress [0..1].
   */
   _calcCurrent_number(delta, ep, p) {
-    this._o.props[delta.name] = (!delta.curve)
+    this._o.props[delta.name] = !delta.curve
       ? delta.start + ep * delta.delta
       : delta.curve(p) * (delta.start + p * delta.delta);
   }
@@ -128,7 +132,7 @@ class Delta {
     @param {Number} Plain progress [0..1].
   */
   _calcCurrent_unit(delta, ep, p) {
-    var currentValue = (!delta.curve)
+    let currentValue = !delta.curve
       ? delta.start.value + ep * delta.delta
       : delta.curve(p) * (delta.start.value + p * delta.delta);
 
@@ -142,11 +146,10 @@ class Delta {
     @param {Number} Plain progress [0..1].
   */
   _calcCurrent_array(delta, ep, p) {
-
-    // var arr,
-    var name = delta.name,
+    // let arr,
+    let name = delta.name,
       props = this._o.props,
-      string = '';
+      string = "";
 
     // to prevent GC bothering with arrays garbage
     // if ( h.isArray( props[name] ) ) {
@@ -156,11 +159,11 @@ class Delta {
 
     // just optimization to prevent curve
     // calculations on every array item
-    var proc = (delta.curve) ? delta.curve(p) : null;
+    let proc = delta.curve ? delta.curve(p) : null;
 
-    for (var i = 0; i < delta.delta.length; i++) {
-      var item = delta.delta[i],
-        dash = (!delta.curve)
+    for (let i = 0; i < delta.delta.length; i++) {
+      let item = delta.delta[i],
+        dash = !delta.curve
           ? delta.start[i].value + ep * item.value
           : proc * (delta.start[i].value + p * item.value);
 

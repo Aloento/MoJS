@@ -9,9 +9,12 @@ let easing = null;
 //
 // @param  {Object} Mix array item
 // @return {Function, Number} Parsed easing or static easing number.
-const parseIfEasing = function(item){
-  if (typeof item.value === 'number') { return item.value;
-  } else { return easing.parseEasing(item.value); }
+const parseIfEasing = function (item) {
+  if (typeof item.value === "number") {
+    return item.value;
+  } else {
+    return easing.parseEasing(item.value);
+  }
 };
 // ---
 
@@ -22,12 +25,13 @@ const parseIfEasing = function(item){
 // @return {Number} Comparation indicator.
 // @side-effect  Check if value on **array item** should be
 //               parsed, and parses it if so.
-const sort = function(a, b){
-  a.value = parseIfEasing(a); b.value = parseIfEasing(b);
+const sort = function (a, b) {
+  a.value = parseIfEasing(a);
+  b.value = parseIfEasing(b);
 
   let returnValue = 0;
-  (a.to < b.to) && (returnValue = -1);
-  (a.to > b.to) && (returnValue =  1);
+  a.to < b.to && (returnValue = -1);
+  a.to > b.to && (returnValue = 1);
   return returnValue;
 };
 
@@ -38,9 +42,15 @@ const sort = function(a, b){
 // @param  {Array} Array to search in.
 // @param  {Number} Progress to search for.
 // @return {Number} Nearest item index.
-const getNearest = function(array, progress){
+const getNearest = function (array, progress) {
   let index = 0;
-  for (let i = 0; i < array.length; i++) { const value = array[i]; index = i; if (value.to > progress) { break; } }
+  for (let i = 0; i < array.length; i++) {
+    const value = array[i];
+    index = i;
+    if (value.to > progress) {
+      break;
+    }
+  }
   return index;
 };
 // ---
@@ -50,22 +60,29 @@ const getNearest = function(array, progress){
 // @param  {Array} Array to search in.
 // @param  {Number} Progress to search for.
 // @return {Number} Nearest item index.
-const mix = function(...args){
+const mix = function (...args) {
   // if there are more than 1 mix values - sort the array
-  if (args.length > 1) { args = args.sort(sort);
-  // if there is just one value - parse it's easing expression
-  } else { args[0].value = parseIfEasing(args[0]); }
+  if (args.length > 1) {
+    args = args.sort(sort);
+    // if there is just one value - parse it's easing expression
+  } else {
+    args[0].value = parseIfEasing(args[0]);
+  }
 
-  return function(progress){
+  return function (progress) {
     const index = getNearest(args, progress);
     if (index !== -1) {
-      const {
-        value
-      } = args[index];
+      const { value } = args[index];
       // return 1 if not defined
-      if ((index === (args.length-1)) && (progress > args[index].to)) { return 1; }
+      if (index === args.length - 1 && progress > args[index].to) {
+        return 1;
+      }
       // evaluate the function if it was passed or return the value itself
-      if (typeof value === 'function') { return value(progress); } else { return value; }
+      if (typeof value === "function") {
+        return value(progress);
+      } else {
+        return value;
+      }
     }
   };
 };
@@ -75,10 +92,13 @@ const mix = function(...args){
 // It was made since requiring "easing" module cuases
 // cycle dependensies issue but we need the module.
 // So we pass it to the create method and it assigns it to
-// already declared easing variable.
+// already declared easing letiable.
 //
 // @param  {Object} Easing module.
 // @return {Function} Mix function.
-const create = function(e){ easing = e; return mix; };
+const create = function (e) {
+  easing = e;
+  return mix;
+};
 
 export default create;

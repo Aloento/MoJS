@@ -1,18 +1,15 @@
-import t from 'tween/tweener';
-import easing from 'easing/easing';
-import Module from 'src/module';
+import t from "./tweener";
+import easing from "../easing/easing";
+import Module from "../module";
 
 class Tween extends Module {
-
   /*
     Method do declare defaults with this._defaults object.
     @private
   */
   _declareDefaults() {
-
     // DEFAULTS
     this._defaults = {
-
       /* duration of the tween [0..∞] */
       duration: 350,
 
@@ -35,7 +32,7 @@ class Tween extends Module {
       isYoyo: false,
 
       /* easing for the tween, could be any easing type [link to easing-types.md] */
-      easing: 'Sin.Out',
+      easing: "Sin.Out",
 
       /*
         Easing for backward direction of the tweenthe tween,
@@ -48,7 +45,7 @@ class Tween extends Module {
       name: null,
 
       /* custom tween's base name */
-      nameBase: 'Tween',
+      nameBase: "Tween",
 
       /*
         onProgress callback runs before any other callback.
@@ -94,10 +91,12 @@ class Tween extends Module {
     @return {Object} Self.
   */
   play(shift = 0) {
-    if (this._state === 'play' && this._isRunning) { return this; }
+    if (this._state === "play" && this._isRunning) {
+      return this;
+    }
     this._props.isReversed = false;
-    this._subPlay(shift, 'play');
-    this._setPlaybackState('play');
+    this._subPlay(shift, "play");
+    this._setPlaybackState("play");
     return this;
   }
 
@@ -108,10 +107,12 @@ class Tween extends Module {
     @return {Object} Self.
   */
   playBackward(shift = 0) {
-    if (this._state === 'reverse' && this._isRunning) { return this; }
+    if (this._state === "reverse" && this._isRunning) {
+      return this;
+    }
     this._props.isReversed = true;
-    this._subPlay(shift, 'reverse');
-    this._setPlaybackState('reverse');
+    this._subPlay(shift, "reverse");
+    this._setPlaybackState("reverse");
     return this;
   }
 
@@ -121,9 +122,11 @@ class Tween extends Module {
     @returns {Object} Self.
   */
   pause() {
-    if (this._state === 'pause' || this._state === 'stop') { return this; }
+    if (this._state === "pause" || this._state === "stop") {
+      return this;
+    }
     this._removeFromTweener();
-    this._setPlaybackState('pause');
+    this._setPlaybackState("pause");
     return this;
   }
 
@@ -134,15 +137,20 @@ class Tween extends Module {
     @returns {Object} Self.
   */
   stop(progress) {
-    if (this._state === 'stop') { return this; }
+    if (this._state === "stop") {
+      return this;
+    }
 
     this._wasUknownUpdate = undefined;
 
-    var stopProc = (progress != null) ? progress
-
-      /* if no progress passsed - set 1 if tween
+    let stopProc =
+      progress != null
+        ? progress
+        : /* if no progress passsed - set 1 if tween
          is playingBackward, otherwise set to 0 */
-      : (this._state === 'reverse') ? 1 : 0;
+        this._state === "reverse"
+        ? 1
+        : 0;
 
     this.setProgress(stopProc);
 
@@ -181,13 +189,15 @@ class Tween extends Module {
     @return {Object} Self.
   */
   resume(shift = 0) {
-    if (this._state !== 'pause') { return this; }
+    if (this._state !== "pause") {
+      return this;
+    }
 
     switch (this._prevState) {
-      case 'play':
+      case "play":
         this.play(shift);
         break;
-      case 'reverse':
+      case "reverse":
         this.playBackward(shift);
         break;
     }
@@ -202,7 +212,7 @@ class Tween extends Module {
     @returns {Object} Self.
   */
   setProgress(progress) {
-    var p = this._props;
+    let p = this._props;
 
     // set start time if there is no one yet.
     !p.startTime && this._setStartTime();
@@ -211,11 +221,11 @@ class Tween extends Module {
     this._playTime = null;
 
     // progress should be in range of [0..1]
-    (progress < 0) && (progress = 0);
-    (progress > 1) && (progress = 1);
+    progress < 0 && (progress = 0);
+    progress > 1 && (progress = 1);
 
     // update self with calculated time
-    this._update((p.startTime - p.delay) + progress * p.repeatTime);
+    this._update(p.startTime - p.delay + progress * p.repeatTime);
     return this;
   }
 
@@ -229,7 +239,7 @@ class Tween extends Module {
     this._props.speed = speed;
 
     // if playing - normalize _startTime and _prevTime to the current point.
-    if (this._state === 'play' || this._state === 'reverse') {
+    if (this._state === "play" || this._state === "reverse") {
       this._setResumeTime(this._state);
     }
     return this;
@@ -242,7 +252,7 @@ class Tween extends Module {
   */
   reset() {
     this._removeFromTweener();
-    this._setPlaybackState('stop');
+    this._setPlaybackState("stop");
     this._progressTime = 0;
     this._isCompleted = false;
     this._isStarted = false;
@@ -268,23 +278,26 @@ class Tween extends Module {
     @return {Object} Self.
   */
   _subPlay(shift = 0, state) {
-    var p = this._props,
-
+    let p = this._props,
       // check if direction of playback changes,
       // if so, the _progressTime needs to be flipped
       _state = this._state,
       _prevState = this._prevState,
-      isPause = _state === 'pause',
-      wasPlay = (_state === 'play' || (isPause && _prevState === 'play')),
-      wasReverse = (_state === 'reverse' || (isPause && _prevState === 'reverse')),
-      isFlip = (wasPlay && state === 'reverse') || (wasReverse && state === 'play');
+      isPause = _state === "pause",
+      wasPlay = _state === "play" || (isPause && _prevState === "play"),
+      wasReverse =
+        _state === "reverse" || (isPause && _prevState === "reverse"),
+      isFlip =
+        (wasPlay && state === "reverse") || (wasReverse && state === "play");
 
     // if tween was ended, set progress to 0 if not, set to elapsed progress
-    this._progressTime = (this._progressTime >= p.repeatTime)
-      ? 0 : this._progressTime;
+    this._progressTime =
+      this._progressTime >= p.repeatTime ? 0 : this._progressTime;
 
     // flip the _progressTime if playback direction changed
-    if (isFlip) { this._progressTime = p.repeatTime - this._progressTime; }
+    if (isFlip) {
+      this._progressTime = p.repeatTime - this._progressTime;
+    }
 
     // set resume time and normalize prev/start times
     this._setResumeTime(state, shift);
@@ -301,20 +314,20 @@ class Tween extends Module {
     @param {Number} Time shift. *Default* is 0.
   */
   _setResumeTime(state, shift = 0) {
-
     // get current moment as resume time
     this._resumeTime = performance.now();
 
     // set start time regarding passed `shift` and `procTime`
-    var startTime = this._resumeTime - Math.abs(shift) - this._progressTime;
+    let startTime = this._resumeTime - Math.abs(shift) - this._progressTime;
     this._setStartTime(startTime, false);
 
     // if we have prevTime - we need to normalize
     // it for the current resume time
     if (this._prevTime != null) {
-      this._prevTime = (state === 'play')
-        ? this._normPrevTimeForward()
-        : this._props.endTime - this._progressTime;
+      this._prevTime =
+        state === "play"
+          ? this._normPrevTimeForward()
+          : this._props.endTime - this._progressTime;
     }
   }
 
@@ -324,7 +337,7 @@ class Tween extends Module {
     @return {Number} Normalized prev time.
   */
   _normPrevTimeForward() {
-    var p = this._props;
+    let p = this._props;
     return p.startTime + this._progressTime - p.delay;
   }
 
@@ -334,7 +347,7 @@ class Tween extends Module {
   */
   constructor(o = {}) {
     super(o);
-    (this._props.name == null) && this._setSelfName();
+    this._props.name == null && this._setSelfName();
     return this;
   }
 
@@ -343,10 +356,10 @@ class Tween extends Module {
     @private
   */
   _setSelfName() {
-    var globalName = `_${this._props.nameBase}s`;
+    let globalName = `_${this._props.nameBase}s`;
 
     // track amount of tweens globally
-    t[globalName] = (t[globalName] == null) ? 1 : ++t[globalName];
+    t[globalName] = t[globalName] == null ? 1 : ++t[globalName];
 
     // and set generic tween's name  || Tween # ||
     this._props.name = `${this._props.nameBase} ${t[globalName]}`;
@@ -358,40 +371,39 @@ class Tween extends Module {
     @param {String} State name
   */
   _setPlaybackState(state) {
-
     // save previous state
     this._prevState = this._state;
     this._state = state;
 
     // callbacks
-    var wasPause = this._prevState === 'pause',
-      wasStop = this._prevState === 'stop',
-      wasPlay = this._prevState === 'play',
-      wasReverse = this._prevState === 'reverse',
+    let wasPause = this._prevState === "pause",
+      wasStop = this._prevState === "stop",
+      wasPlay = this._prevState === "play",
+      wasReverse = this._prevState === "reverse",
       wasPlaying = wasPlay || wasReverse,
       wasStill = wasStop || wasPause;
 
-    if ((state === 'play' || state === 'reverse') && wasStill) {
+    if ((state === "play" || state === "reverse") && wasStill) {
       this._playbackStart();
     }
-    if (state === 'pause' && wasPlaying) {
+    if (state === "pause" && wasPlaying) {
       this._playbackPause();
     }
-    if (state === 'stop' && (wasPlaying || wasPause)) {
+    if (state === "stop" && (wasPlaying || wasPause)) {
       this._playbackStop();
     }
   }
 
   /*
-    Method to declare some vars.
+    Method to declare some lets.
     @private
   */
-  _vars() {
+  _lets() {
     this.progress = 0;
     this._prevTime = undefined;
     this._progressTime = 0;
     this._negativeShift = 0;
-    this._state = 'stop';
+    this._state = "stop";
 
     // if negative delay was specified,
     // save it to _negativeShift property and
@@ -418,7 +430,6 @@ class Tween extends Module {
     @private
   */
   _extendDefaults() {
-
     // save callback overrides object with fallback to empty one
     this._callbackOverrides = this._o.callbackOverrides || {};
     delete this._o.callbackOverrides;
@@ -426,7 +437,7 @@ class Tween extends Module {
     // call the _extendDefaults @ Module
     super._extendDefaults();
 
-    var p = this._props;
+    let p = this._props;
     p.easing = easing.parseEasing(p.easing);
     p.easing._parent = this;
 
@@ -446,17 +457,18 @@ class Tween extends Module {
     @returns this
   */
   _setStartTime(time, isResetFlags = true) {
-    var p = this._props,
-      shiftTime = (p.shiftTime || 0);
+    let p = this._props,
+      shiftTime = p.shiftTime || 0;
 
     // reset flags
     if (isResetFlags) {
-      this._isCompleted = false; this._isRepeatCompleted = false;
+      this._isCompleted = false;
+      this._isRepeatCompleted = false;
       this._isStarted = false;
     }
 
     // set start time to passed time or to the current moment
-    var startTime = (time == null) ? performance.now() : time;
+    let startTime = time == null ? performance.now() : time;
 
     // calculate bounds
     // - negativeShift is negative delay in options hash
@@ -467,8 +479,8 @@ class Tween extends Module {
     // set play time to the startTimes
     // if playback controls are used - use _resumeTime as play time,
     // else use shifted startTime -- shift is needed for timelines append chains
-    this._playTime = (this._resumeTime != null)
-      ? this._resumeTime : startTime + shiftTime;
+    this._playTime =
+      this._resumeTime != null ? this._resumeTime : startTime + shiftTime;
     this._resumeTime = null;
 
     return this;
@@ -487,57 +499,57 @@ class Tween extends Module {
                     1 = edge jump in positive direction.
   */
   _update(time, timelinePrevTime, wasYoyo, onEdge) {
-    var p = this._props;
+    let p = this._props;
 
     // if we don't the _prevTime thus the direction we are heading to,
     // but prevTime was passed thus we are child of a Timeline
     // set _prevTime to passed one and pretent that there was unknown
     // update to not to block start/complete callbacks
     if (this._prevTime == null && timelinePrevTime != null) {
-
       if (this._props.speed && this._playTime) {
-
         // play point + ( speed * delta )
-        this._prevTime = this._playTime + (this._props.speed * (timelinePrevTime - this._playTime));
+        this._prevTime =
+          this._playTime +
+          this._props.speed * (timelinePrevTime - this._playTime);
       }
 
       // this._prevTime = timelinePrevTime;
       this._wasUknownUpdate = true;
     }
 
-    // var before = time;
-    // cache vars
-    var startPoint = p.startTime - p.delay;
+    // let before = time;
+    // cache lets
+    let startPoint = p.startTime - p.delay;
 
     // if speed param was defined - calculate
     // new time regarding speed
     if (p.speed && this._playTime) {
-
       // play point + ( speed * delta )
-      time = this._playTime + (p.speed * (time - this._playTime));
+      time = this._playTime + p.speed * (time - this._playTime);
     }
 
     // due to javascript precision issues, after speed mapping
     // we can get very close number that was made from progress of 1
     // and in fact represents `endTime` if so, set the time to `endTime`
-    if (Math.abs(p.endTime - time) < 0.00000001) { time = p.endTime; }
+    if (Math.abs(p.endTime - time) < 0.00000001) {
+      time = p.endTime;
+    }
 
     // if parent is onEdge but not very start nor very end
     if (onEdge && wasYoyo != null) {
-      var T = this._getPeriod(time),
-        isYoyo = !!(p.isYoyo && this._props.repeat && (T % 2 === 1));
+      let T = this._getPeriod(time),
+        isYoyo = !!(p.isYoyo && this._props.repeat && T % 2 === 1);
 
       // for timeline
       // notify children about edge jump
       if (this._timelines) {
-        for (var i = 0; i < this._timelines.length; i++) {
+        for (let i = 0; i < this._timelines.length; i++) {
           this._timelines[i]._update(time, timelinePrevTime, wasYoyo, onEdge);
         }
       }
 
       // forward edge direction
       if (onEdge === 1) {
-
         // jumped from yoyo period?
         if (wasYoyo) {
           this._prevTime = time + 1;
@@ -549,16 +561,14 @@ class Tween extends Module {
           this._complete(time, isYoyo);
         }
 
-      // backward edge direction
+        // backward edge direction
       } else if (onEdge === -1) {
-
         // jumped from yoyo period?
         if (wasYoyo) {
           this._prevTime = time - 1;
           this._repeatComplete(time, isYoyo);
           this._complete(time, isYoyo);
         } else {
-
           // call _start callbacks only if prev time was in active area
           // not always true for append chains
           if (this._prevTime >= p.startTime && this._prevTime <= p.endTime) {
@@ -584,16 +594,18 @@ class Tween extends Module {
     }
 
     // else if not started or ended set progress time to 0
-    else if (time <= startPoint) { this._progressTime = 0; }
-    else if (time >= p.endTime) {
-
+    else if (time <= startPoint) {
+      this._progressTime = 0;
+    } else if (time >= p.endTime) {
       // set progress time to repeat time + tiny cofficient
       // to make it extend further than the end time
-      this._progressTime = p.repeatTime + .00000000001;
+      this._progressTime = p.repeatTime + 0.00000000001;
     }
 
     // reverse time if _props.isReversed is set
-    if (p.isReversed) { time = p.endTime - this._progressTime; }
+    if (p.isReversed) {
+      time = p.endTime - this._progressTime;
+    }
 
     // We need to know what direction we are heading to,
     // so if we don't have the previous update value - this is very first
@@ -616,22 +628,21 @@ class Tween extends Module {
       active area is the area from start time to end time,
       with all the repeat and delays in it
     */
-    if ((time >= p.startTime) && (time <= p.endTime)) {
+    if (time >= p.startTime && time <= p.endTime) {
       this._updateInActiveArea(time);
     } else {
-
       // if was in active area - update in inactive area but just once -
       // right after the active area
-      if (this._isInActiveArea) { this._updateInInactiveArea(time); }
-      else if (!this._isRefreshed) {
-
+      if (this._isInActiveArea) {
+        this._updateInInactiveArea(time);
+      } else if (!this._isRefreshed) {
         // onRefresh callback
         // before startTime
         if (time < p.startTime && this.progress !== 0) {
           this._refresh(true);
           this._isRefreshed = true;
 
-        // after endTime
+          // after endTime
         }
 
         // else if ( time > p.endTime ) { }
@@ -639,7 +650,7 @@ class Tween extends Module {
     }
 
     this._prevTime = time;
-    return (time >= p.endTime) || (time <= startPoint);
+    return time >= p.endTime || time <= startPoint;
   }
 
   /*
@@ -648,25 +659,31 @@ class Tween extends Module {
     @param {Number} Current update time.
   */
   _updateInInactiveArea(time) {
-    if (!this._isInActiveArea) { return; }
-    var p = this._props;
+    if (!this._isInActiveArea) {
+      return;
+    }
+    let p = this._props;
 
     // complete if time is larger then end time
     if (time > p.endTime && !this._isCompleted) {
       this._progress(1, time);
 
       // get period number
-      var T = this._getPeriod(p.endTime),
-        isYoyo = p.isYoyo && (T % 2 === 0);
+      let T = this._getPeriod(p.endTime),
+        isYoyo = p.isYoyo && T % 2 === 0;
 
-      this._setProgress((isYoyo) ? 0 : 1, time, isYoyo);
+      this._setProgress(isYoyo ? 0 : 1, time, isYoyo);
       this._repeatComplete(time, isYoyo);
       this._complete(time, isYoyo);
     }
 
     // if was active and went to - inactive area "-"
-    if (time < this._prevTime && time < p.startTime && !this._isStarted && !this._isCompleted) {
-
+    if (
+      time < this._prevTime &&
+      time < p.startTime &&
+      !this._isStarted &&
+      !this._isCompleted
+    ) {
       // if was in active area and didn't fire onStart callback
       this._progress(0, time, false);
       this._setProgress(0, time, false);
@@ -683,30 +700,33 @@ class Tween extends Module {
     @param {Number} Current update time.
   */
   _updateInActiveArea(time) {
-
-    var props = this._props,
+    let props = this._props,
       delayDuration = props.delay + props.duration,
       startPoint = props.startTime - props.delay,
       elapsed = (time - props.startTime + props.delay) % delayDuration,
-      TCount = Math.round((props.endTime - props.startTime + props.delay) / delayDuration),
+      TCount = Math.round(
+        (props.endTime - props.startTime + props.delay) / delayDuration
+      ),
       T = this._getPeriod(time),
       TValue = this._delayT,
       prevT = this._getPeriod(this._prevTime),
       TPrevValue = this._delayT;
 
     // "zero" and "one" value regarding yoyo and it's period
-    var isYoyo = props.isYoyo && (T % 2 === 1),
-      isYoyoPrev = props.isYoyo && (prevT % 2 === 1),
-      yoyoZero = (isYoyo) ? 1 : 0;
+    let isYoyo = props.isYoyo && T % 2 === 1,
+      isYoyoPrev = props.isYoyo && prevT % 2 === 1,
+      yoyoZero = isYoyo ? 1 : 0;
 
     if (time === props.endTime) {
       this._wasUknownUpdate = false;
 
       // if `time` is equal to `endTime`, T represents the next period,
       // so we need to decrement T and calculate "one" value regarding yoyo
-      isYoyo = (props.isYoyo && ((T - 1) % 2 === 1));
-      this._setProgress((isYoyo ? 0 : 1), time, isYoyo);
-      if (time > this._prevTime) { this._isRepeatCompleted = false; }
+      isYoyo = props.isYoyo && (T - 1) % 2 === 1;
+      this._setProgress(isYoyo ? 0 : 1, time, isYoyo);
+      if (time > this._prevTime) {
+        this._isRepeatCompleted = false;
+      }
       this._repeatComplete(time, isYoyo);
       return this._complete(time, isYoyo);
     }
@@ -717,20 +737,22 @@ class Tween extends Module {
 
     // if time is inside the duration area of the tween
     if (startPoint + elapsed >= props.startTime) {
-      this._isInActiveArea = true; this._isRepeatCompleted = false;
-      this._isRepeatStart = false; this._isStarted = false;
+      this._isInActiveArea = true;
+      this._isRepeatCompleted = false;
+      this._isRepeatStart = false;
+      this._isStarted = false;
 
       // active zone or larger then end
-      var elapsed2 = (time - props.startTime) % delayDuration,
+      let elapsed2 = (time - props.startTime) % delayDuration,
         proc = elapsed2 / props.duration;
 
       // |=====|=====|=====| >>>
       //      ^1^2
-      var isOnEdge = (T > 0) && (prevT < T);
+      let isOnEdge = T > 0 && prevT < T;
 
       // |=====|=====|=====| <<<
       //      ^2^1
-      var isOnReverseEdge = (prevT > T);
+      let isOnReverseEdge = prevT > T;
 
       // for use in timeline
       this._onEdge = 0;
@@ -757,27 +779,26 @@ class Tween extends Module {
       }
 
       if (isOnEdge) {
-
         // if not just after delay
         // |---=====|---=====|---=====| >>>
         //            ^1 ^2
         // because we have already handled
         // 1 and onRepeatComplete in delay gap
         if (this.progress !== 1) {
-
           // prevT
-          var isThisYoyo = props.isYoyo && ((T - 1) % 2 === 1);
+          let isThisYoyo = props.isYoyo && (T - 1) % 2 === 1;
           this._repeatComplete(time, isThisYoyo);
         }
 
         // if on edge but not at very start
         // |=====|=====|=====| >>>
         // ^!    ^here ^here
-        if (prevT >= 0) { this._repeatStart(time, isYoyo); }
+        if (prevT >= 0) {
+          this._repeatStart(time, isYoyo);
+        }
       }
 
       if (time > this._prevTime) {
-
         //  |=====|=====|=====| >>>
         // ^1  ^2
         if (!this._isStarted && this._prevTime <= props.startTime) {
@@ -795,7 +816,6 @@ class Tween extends Module {
       }
 
       if (isOnReverseEdge) {
-
         // if on edge but not at very end
         // |=====|=====|=====| <<<
         //       ^here ^here ^not here
@@ -821,8 +841,7 @@ class Tween extends Module {
         this._repeatComplete(time, isYoyo);
       }
 
-      if (prevT === 'delay') {
-
+      if (prevT === "delay") {
         // if just before delay gap
         // |---=====|---=====|---=====| <<<
         //               ^2    ^1
@@ -833,42 +852,47 @@ class Tween extends Module {
         // if just after delay gap
         // |---=====|---=====|---=====| >>>
         //            ^1  ^2
-        if (T === TPrevValue && T > 0) { this._repeatStart(time, isYoyo); }
+        if (T === TPrevValue && T > 0) {
+          this._repeatStart(time, isYoyo);
+        }
       }
 
       // swap progress and repeatStart based on direction
       if (time > this._prevTime) {
-
         // if progress is equal 0 and progress grows
-        if (proc === 0) { this._repeatStart(time, isYoyo); }
+        if (proc === 0) {
+          this._repeatStart(time, isYoyo);
+        }
         if (time !== props.endTime) {
-          this._setProgress(((isYoyo) ? 1 - proc : proc), time, isYoyo);
+          this._setProgress(isYoyo ? 1 - proc : proc, time, isYoyo);
         }
       } else {
         if (time !== props.endTime) {
-          this._setProgress(((isYoyo) ? 1 - proc : proc), time, isYoyo);
+          this._setProgress(isYoyo ? 1 - proc : proc, time, isYoyo);
         }
 
         // if progress is equal 0 and progress grows
-        if (proc === 0) { this._repeatStart(time, isYoyo); }
+        if (proc === 0) {
+          this._repeatStart(time, isYoyo);
+        }
       }
 
       if (time === props.startTime) {
-        this._start(time, isYoyo); }
+        this._start(time, isYoyo);
+      }
 
-    // delay gap - react only once
+      // delay gap - react only once
     } else if (this._isInActiveArea) {
-
       // because T will be string of "delay" here,
       // let's normalize it be setting to TValue
-      var t = (T === 'delay') ? TValue : T,
+      let t = T === "delay" ? TValue : T,
         isGrows = time > this._prevTime;
 
       // decrement period if forward direction of update
       isGrows && t--;
 
       // calculate normalized yoyoZero value
-      yoyoZero = ((props.isYoyo && (t % 2 === 1)) ? 1 : 0);
+      yoyoZero = props.isYoyo && t % 2 === 1 ? 1 : 0;
 
       // if was in active area and previous time was larger
       // |---=====|---=====|---=====| <<<
@@ -879,18 +903,20 @@ class Tween extends Module {
       }
 
       // set 1 or 0 regarding direction and yoyo
-      this._setProgress(((isGrows) ? 1 - yoyoZero : yoyoZero), time, yoyoZero === 1);
+      this._setProgress(
+        isGrows ? 1 - yoyoZero : yoyoZero,
+        time,
+        yoyoZero === 1
+      );
 
       // if time grows
       if (time > this._prevTime) {
-
         // if reverse direction and in delay gap, then progress will be 0
         // if so we don't need to call the onRepeatComplete callback
         // |---=====|---=====|---=====| <<<
         //   ^0       ^0       ^0
         // OR we have flipped 0 to 1 regarding yoyo option
         if (this.progress !== 0 || yoyoZero === 1) {
-
           // since we repeatComplete for previous period
           // invert isYoyo option
           // is elapsed is 0 - count as previous period
@@ -911,7 +937,10 @@ class Tween extends Module {
     @private
     @returns {Object} Self.
   */
-  _removeFromTweener() { t.remove(this); return this; }
+  _removeFromTweener() {
+    t.remove(this);
+    return this;
+  }
 
   /*
     Method to get current period number.
@@ -920,32 +949,31 @@ class Tween extends Module {
     @returns {Number} Current period number.
   */
   _getPeriod(time) {
-    var p = this._props,
+    let p = this._props,
       TTime = p.delay + p.duration,
       dTime = p.delay + time - p.startTime,
       T = dTime / TTime,
-
       // if time if equal to endTime we need to set the elapsed
       // time to 0 to fix the occasional precision js bug, which
       // causes 0 to be something like 1e-12
-      elapsed = (time < p.endTime) ? dTime % TTime : 0;
+      elapsed = time < p.endTime ? dTime % TTime : 0;
 
     // If the latest period, round the result, otherwise floor it.
     // Basically we always can floor the result, but because of js
     // precision issues, sometimes the result is 2.99999998 which
     // will result in 2 instead of 3 after the floor operation.
-    T = (time >= p.endTime) ? Math.round(T) : Math.floor(T);
+    T = time >= p.endTime ? Math.round(T) : Math.floor(T);
 
     // if time is larger then the end time
     if (time > p.endTime) {
-
       // set equal to the periods count
       T = Math.round((p.endTime - p.startTime + p.delay) / TTime);
 
-    // if in delay gap, set _delayT to current
-    // period number and return "delay"
+      // if in delay gap, set _delayT to current
+      // period number and return "delay"
     } else if (elapsed > 0 && elapsed < p.delay) {
-      this._delayT = T; T = 'delay';
+      this._delayT = T;
+      T = "delay";
     }
 
     // if the end of period and there is a delay
@@ -962,7 +990,7 @@ class Tween extends Module {
     @returns {Object} Self.
   */
   _setProgress(proc, time, isYoyo) {
-    var p = this._props,
+    let p = this._props,
       isYoyoChanged = p.wasYoyo !== isYoyo,
       isForward = time > this._prevTime;
 
@@ -972,21 +1000,21 @@ class Tween extends Module {
     if ((isForward && !isYoyo) || (!isForward && isYoyo)) {
       this.easedProgress = p.easing(proc);
 
-    // get the current easing for `backward` direction regarding `yoyo`
+      // get the current easing for `backward` direction regarding `yoyo`
     } else if ((!isForward && !isYoyo) || (isForward && isYoyo)) {
-      var easing = (p.backwardEasing != null)
-        ? p.backwardEasing
-        : p.easing;
+      let easing = p.backwardEasing != null ? p.backwardEasing : p.easing;
 
       this.easedProgress = easing(proc);
     }
 
     if (p.prevEasedProgress !== this.easedProgress || isYoyoChanged) {
-      if (p.onUpdate != null && typeof p.onUpdate === 'function') {
+      if (p.onUpdate != null && typeof p.onUpdate === "function") {
         p.onUpdate.call(
           p.callbacksContext || this,
-          this.easedProgress, this.progress,
-          isForward, isYoyo,
+          this.easedProgress,
+          this.progress,
+          isForward,
+          isYoyo
         );
       }
     }
@@ -1003,12 +1031,15 @@ class Tween extends Module {
     @param {Boolean} Is yoyo period.
   */
   _start(time, isYoyo) {
-    if (this._isStarted) { return; }
-    var p = this._props;
-    if (p.onStart != null && typeof p.onStart === 'function') {
+    if (this._isStarted) {
+      return;
+    }
+    let p = this._props;
+    if (p.onStart != null && typeof p.onStart === "function") {
       p.onStart.call(p.callbacksContext || this, time > this._prevTime, isYoyo);
     }
-    this._isCompleted = false; this._isStarted = true;
+    this._isCompleted = false;
+    this._isStarted = true;
     this._isFirstUpdate = false;
   }
 
@@ -1017,8 +1048,8 @@ class Tween extends Module {
     @private
   */
   _playbackStart() {
-    var p = this._props;
-    if (p.onPlaybackStart != null && typeof p.onPlaybackStart === 'function') {
+    let p = this._props;
+    if (p.onPlaybackStart != null && typeof p.onPlaybackStart === "function") {
       p.onPlaybackStart.call(p.callbacksContext || this);
     }
   }
@@ -1028,8 +1059,8 @@ class Tween extends Module {
     @private
   */
   _playbackPause() {
-    var p = this._props;
-    if (p.onPlaybackPause != null && typeof p.onPlaybackPause === 'function') {
+    let p = this._props;
+    if (p.onPlaybackPause != null && typeof p.onPlaybackPause === "function") {
       p.onPlaybackPause.call(p.callbacksContext || this);
     }
   }
@@ -1039,8 +1070,8 @@ class Tween extends Module {
     @private
   */
   _playbackStop() {
-    var p = this._props;
-    if (p.onPlaybackStop != null && typeof p.onPlaybackStop === 'function') {
+    let p = this._props;
+    if (p.onPlaybackStop != null && typeof p.onPlaybackStop === "function") {
       p.onPlaybackStop.call(p.callbacksContext || this);
     }
   }
@@ -1050,8 +1081,11 @@ class Tween extends Module {
     @private
   */
   _playbackComplete() {
-    var p = this._props;
-    if (p.onPlaybackComplete != null && typeof p.onPlaybackComplete === 'function') {
+    let p = this._props;
+    if (
+      p.onPlaybackComplete != null &&
+      typeof p.onPlaybackComplete === "function"
+    ) {
       p.onPlaybackComplete.call(p.callbacksContext || this);
     }
   }
@@ -1064,13 +1098,20 @@ class Tween extends Module {
     @param {Boolean} Is yoyo period.
   */
   _complete(time, isYoyo) {
-    if (this._isCompleted) { return; }
-    var p = this._props;
-    if (p.onComplete != null && typeof p.onComplete === 'function') {
-      p.onComplete.call(p.callbacksContext || this, time > this._prevTime, isYoyo);
+    if (this._isCompleted) {
+      return;
+    }
+    let p = this._props;
+    if (p.onComplete != null && typeof p.onComplete === "function") {
+      p.onComplete.call(
+        p.callbacksContext || this,
+        time > this._prevTime,
+        isYoyo
+      );
     }
 
-    this._isCompleted = true; this._isStarted = false;
+    this._isCompleted = true;
+    this._isStarted = false;
     this._isFirstUpdate = false;
 
     // reset _prevYoyo for timeline usage
@@ -1085,13 +1126,18 @@ class Tween extends Module {
     @param {Boolean} Is yoyo period.
   */
   _firstUpdate(time, isYoyo) {
-    if (this._isFirstUpdate) { return; }
-    var p = this._props;
-    if (p.onFirstUpdate != null && typeof p.onFirstUpdate === 'function') {
-
+    if (this._isFirstUpdate) {
+      return;
+    }
+    let p = this._props;
+    if (p.onFirstUpdate != null && typeof p.onFirstUpdate === "function") {
       // onFirstUpdate should have tween pointer
       p.onFirstUpdate.tween = this;
-      p.onFirstUpdate.call(p.callbacksContext || this, time > this._prevTime, isYoyo);
+      p.onFirstUpdate.call(
+        p.callbacksContext || this,
+        time > this._prevTime,
+        isYoyo
+      );
     }
     this._isFirstUpdate = true;
   }
@@ -1103,10 +1149,19 @@ class Tween extends Module {
     @param {Boolean} Is repeat period.
   */
   _repeatComplete(time, isYoyo) {
-    if (this._isRepeatCompleted) { return; }
-    var p = this._props;
-    if (p.onRepeatComplete != null && typeof p.onRepeatComplete === 'function') {
-      p.onRepeatComplete.call(p.callbacksContext || this, time > this._prevTime, isYoyo);
+    if (this._isRepeatCompleted) {
+      return;
+    }
+    let p = this._props;
+    if (
+      p.onRepeatComplete != null &&
+      typeof p.onRepeatComplete === "function"
+    ) {
+      p.onRepeatComplete.call(
+        p.callbacksContext || this,
+        time > this._prevTime,
+        isYoyo
+      );
     }
     this._isRepeatCompleted = true;
 
@@ -1120,10 +1175,16 @@ class Tween extends Module {
     @param {Boolean} Is yoyo period.
   */
   _repeatStart(time, isYoyo) {
-    if (this._isRepeatStart) { return; }
-    var p = this._props;
-    if (p.onRepeatStart != null && typeof p.onRepeatStart === 'function') {
-      p.onRepeatStart.call(p.callbacksContext || this, time > this._prevTime, isYoyo);
+    if (this._isRepeatStart) {
+      return;
+    }
+    let p = this._props;
+    if (p.onRepeatStart != null && typeof p.onRepeatStart === "function") {
+      p.onRepeatStart.call(
+        p.callbacksContext || this,
+        time > this._prevTime,
+        isYoyo
+      );
     }
     this._isRepeatStart = true;
   }
@@ -1135,9 +1196,13 @@ class Tween extends Module {
     @param {Number} Progress to set.
   */
   _progress(progress, time) {
-    var p = this._props;
-    if (p.onProgress != null && typeof p.onProgress === 'function') {
-      p.onProgress.call(p.callbacksContext || this, progress, time > this._prevTime);
+    let p = this._props;
+    if (p.onProgress != null && typeof p.onProgress === "function") {
+      p.onProgress.call(
+        p.callbacksContext || this,
+        progress,
+        time > this._prevTime
+      );
     }
   }
 
@@ -1148,10 +1213,10 @@ class Tween extends Module {
     @param {Boolean} If refresh even before start time.
   */
   _refresh(isBefore) {
-    var p = this._props;
+    let p = this._props;
     if (p.onRefresh != null) {
-      var context = p.callbacksContext || this,
-        progress = (isBefore) ? 0 : 1;
+      let context = p.callbacksContext || this,
+        progress = isBefore ? 0 : 1;
 
       p.onRefresh.call(context, isBefore, p.easing(progress), progress);
     }
@@ -1169,7 +1234,7 @@ class Tween extends Module {
     @private
   */
   _onTweenerFinish() {
-    this._setPlaybackState('stop');
+    this._setPlaybackState("stop");
     this._playbackComplete();
   }
 
@@ -1193,19 +1258,20 @@ class Tween extends Module {
     @param {Any} Value for the property.
   */
   _assignProp(key, value) {
-
     // fallback to defaults
-    if (value == null) { value = this._defaults[key]; }
+    if (value == null) {
+      value = this._defaults[key];
+    }
 
     // parse easing
-    if (key === 'easing') {
+    if (key === "easing") {
       value = easing.parseEasing(value);
       value._parent = this;
     }
 
     // handle control callbacks overrides
-    var control = this._callbackOverrides[key],
-      isntOverriden = (!value || (!value.isMojsCallbackOverride));
+    let control = this._callbackOverrides[key],
+      isntOverriden = !value || !value.isMojsCallbackOverride;
     if (control && isntOverriden) {
       value = this._overrideCallback(value, control);
     }
@@ -1221,9 +1287,8 @@ class Tween extends Module {
     @parma {Function}  Method to call
   */
   _overrideCallback(callback, fun) {
-    var isCallback = (callback && typeof callback === 'function'),
+    let isCallback = callback && typeof callback === "function",
       override = function callbackOverride() {
-
         // call overriden callback if it exists
         isCallback && callback.apply(this, arguments); // eslint-disable-line
 
@@ -1237,14 +1302,14 @@ class Tween extends Module {
   }
 
   // _visualizeProgress(time) {
-  //   var str = '|',
+  //   let str = '|',
   //       procStr = ' ',
   //       p = this._props,
   //       proc = p.startTime - p.delay;
 
   //   while ( proc < p.endTime ) {
   //     if (p.delay > 0 ) {
-  //       var newProc = proc + p.delay;
+  //       let newProc = proc + p.delay;
   //       if ( time > proc && time < newProc ) {
   //         procStr += ' ^ ';
   //       } else {
@@ -1253,7 +1318,7 @@ class Tween extends Module {
   //       proc = newProc;
   //       str  += '---';
   //     }
-  //     var newProc = proc + p.duration;
+  //     let newProc = proc + p.duration;
   //     if ( time > proc && time < newProc ) {
   //       procStr += '  ^   ';
   //     } else if (time === proc) {

@@ -1,38 +1,44 @@
-import h from 'src/h';
-import Module from 'src/module';
+import h from "../h";
+import Module from "../module";
 
 class Bit extends Module {
-
   /*
     Method to declare module's defaults.
     @private
   */
   _declareDefaults() {
     this._defaults = {
-      'ns': 'http://www.w3.org/2000/svg',
-      'tag': 'ellipse',
-      'parent': document.body,
-      'ratio': 1,
-      'radius': 50,
-      'radiusX': null,
-      'radiusY': null,
-      'stroke': 'hotpink',
-      'stroke-dasharray': '',
-      'stroke-dashoffset': '',
-      'stroke-linecap': '',
-      'stroke-width': 2,
-      'stroke-opacity': 1,
-      'fill': 'transparent',
-      'fill-opacity': 1,
-      'width': 0,
-      'height': 0,
+      ns: "http://www.w3.org/2000/svg",
+      tag: "ellipse",
+      parent: document.body,
+      ratio: 1,
+      radius: 50,
+      radiusX: null,
+      radiusY: null,
+      stroke: "hotpink",
+      "stroke-dasharray": "",
+      "stroke-dashoffset": "",
+      "stroke-linecap": "",
+      "stroke-width": 2,
+      "stroke-opacity": 1,
+      fill: "transparent",
+      "fill-opacity": 1,
+      width: 0,
+      height: 0,
     };
     this._drawMap = [
-      'stroke', 'stroke-width', 'stroke-opacity', 'stroke-dasharray', 'fill',
-      'stroke-dashoffset', 'stroke-linecap', 'fill-opacity', 'transform',
+      "stroke",
+      "stroke-width",
+      "stroke-opacity",
+      "stroke-dasharray",
+      "fill",
+      "stroke-dashoffset",
+      "stroke-linecap",
+      "fill-opacity",
+      "transform",
     ];
   }
-  _vars() {
+  _lets() {
     this._state = {};
     this._drawMapLength = this._drawMap.length;
   }
@@ -42,7 +48,9 @@ class Bit extends Module {
     @private
   */
   _render() {
-    if (this._isRendered) { return; }
+    if (this._isRendered) {
+      return;
+    }
 
     // set `_isRendered` hatch
     this._isRendered = true;
@@ -64,10 +72,10 @@ class Bit extends Module {
     @private
   */
   _createSVGCanvas() {
-    var p = this._props;
+    let p = this._props;
 
     // create canvas - `svg` element to draw in
-    this._canvas = document.createElementNS(p.ns, 'svg');
+    this._canvas = document.createElementNS(p.ns, "svg");
 
     // create the element shape element and add it to the canvas
     this.el = document.createElementNS(p.ns, p.tag);
@@ -81,11 +89,11 @@ class Bit extends Module {
   _setCanvasSize() {
     const style = this._canvas.style;
 
-    style.display = 'block';
-    style.width = '100%';
-    style.height = '100%';
-    style.left = '0px';
-    style.top = '0px';
+    style.display = "block";
+    style.width = "100%";
+    style.height = "100%";
+    style.left = "0px";
+    style.top = "0px";
   }
 
   /*
@@ -96,12 +104,12 @@ class Bit extends Module {
   _draw() {
     this._props.length = this._getLength();
 
-    var len = this._drawMapLength;
+    let len = this._drawMapLength;
     while (len--) {
-      var name = this._drawMap[len];
+      let name = this._drawMap[len];
       switch (name) {
-        case 'stroke-dasharray':
-        case 'stroke-dashoffset':
+        case "stroke-dasharray":
+        case "stroke-dashoffset":
           this.castStrokeDash(name);
       }
       this._setAttrIfChanged(name, this._props[name]);
@@ -109,31 +117,29 @@ class Bit extends Module {
     this._state.radius = this._props.radius;
   }
   castStrokeDash(name) {
-
     // # if array of values
-    var p = this._props;
+    let p = this._props;
     if (h.isArray(p[name])) {
-      var stroke = '';
-      for (var i = 0; i < p[name].length; i++) {
-        var dash = p[name][i],
-          cast = (dash.unit === '%')
-            ? this.castPercent(dash.value)
-            : dash.value;
+      let stroke = "";
+      for (let i = 0; i < p[name].length; i++) {
+        let dash = p[name][i],
+          cast = dash.unit === "%" ? this.castPercent(dash.value) : dash.value;
         stroke += `${cast} `;
       }
-      p[name] = (stroke === '0 ') ? stroke = '' : stroke;
-      return p[name] = stroke;
+      p[name] = stroke === "0 " ? (stroke = "") : stroke;
+      return (p[name] = stroke);
     }
 
     // # if single value
-    if (typeof p[name] === 'object') {
-      stroke = (p[name].unit === '%')
-        ? this.castPercent(p[name].value)
-        : p[name].value;
-      p[name] = (stroke === 0) ? stroke = '' : stroke;
+    if (typeof p[name] === "object") {
+      stroke =
+        p[name].unit === "%" ? this.castPercent(p[name].value) : p[name].value;
+      p[name] = stroke === 0 ? (stroke = "") : stroke;
     }
   }
-  castPercent(percent) { return percent * (this._props.length / 100); }
+  castPercent(percent) {
+    return percent * (this._props.length / 100);
+  }
 
   /*
     Method to set props to attributes and cache the values.
@@ -141,7 +147,6 @@ class Bit extends Module {
   */
   _setAttrIfChanged(name, value) {
     if (this._state[name] !== value) {
-
       // this.el.style[name] = value;
       this.el.setAttribute(name, value);
       this._state[name] = value;
@@ -154,14 +159,14 @@ class Bit extends Module {
     @returns {Number} Length of the shape.
   */
   _getLength() {
-    var p = this._props,
+    let p = this._props,
       len = 0,
       isGetLength = !!(this.el && this.el.getTotalLength);
 
-    if (isGetLength && this.el.getAttribute('d')) {
+    if (isGetLength && this.el.getAttribute("d")) {
       len = this.el.getTotalLength();
     } else {
-      len = 2 * ((p.radiusX != null) ? p.radiusX : p.radius);
+      len = 2 * (p.radiusX != null ? p.radiusX : p.radius);
     }
     return len;
   }
@@ -175,7 +180,7 @@ class Bit extends Module {
   _getPointsPerimiter(points) {
     let sum = 0;
 
-    for (var i = 1; i < points.length; i++) {
+    for (let i = 1; i < points.length; i++) {
       sum += this._pointsDelta(points[i - 1], points[i]);
     }
 

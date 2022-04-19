@@ -18,8 +18,8 @@ import Delta from "./delta/delta";
 import Deltas from "./delta/deltas";
 import Module from "./module";
 
-let mojs = {
-  isDebug: process?.env?.NODE_ENV === "development",
+const mojs = {
+  isDebug: false,
   helpers: h,
   Shape,
   ShapeSwirl,

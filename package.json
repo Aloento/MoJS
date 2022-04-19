@@ -1,6 +1,6 @@
 {
   "name": "@aloento/mojs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "The motion graphics toolbelt for the web",
   "source": "src/mojs.js",
   "main": "dist/mo.mjs",

@@ -1,6 +1,6 @@
 # [mo · js](https://www.npmjs.com/package/@aloento/mojs)
 
-The motion graphics toolbelt for the web.
+The motion graphics toolbelt for the web with **Types**.
 
 ## Intro
 
